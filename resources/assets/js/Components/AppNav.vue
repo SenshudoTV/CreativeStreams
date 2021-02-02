@@ -16,12 +16,21 @@
                     <b-nav-item>
                         <b-button
                             variant="link"
-                            href="https://github.com/sweptsquash/CreativeStreams"
+                            class="text-light"
+                            href="https://github.com/SenshudoTV/CreativeStreams"
                             target="_blank"
                             rel="noopener noreferrer"
                             title="Github"
                         >
                             <font-awesome-icon :icon="['fab', 'github']" />
+                        </b-button>
+                    </b-nav-item>
+                    <b-nav-item>
+                        <b-button
+                            variant="outline-light"
+                            id="toggleTheme"
+                        >
+                            <font-awesome-icon :icon="['fas', themeIcon]" />
                         </b-button>
                     </b-nav-item>
                     <b-nav-item>
@@ -47,10 +56,14 @@ export default {
     data() {
         return {
             Logo: LogoImg,
+            themeIcon: 'moon',
         }
     },
     computed: {
         ...mapGetters(['isAuthorized']),
+    },
+    mounted() {
+        this.toggleTheme(true)
     },
     methods: {
         authorize() {
@@ -59,6 +72,26 @@ export default {
             } else {
                 this.$store.dispatch(USER_UPDATE)
             }
+        },
+        toggleTheme(initialSetup = false) {
+            let theme = 'light'
+
+            if (initialSetup) {
+                theme = localStorage.getItem('app-theme')
+
+                if (theme === undefined && theme === null) {
+                    theme = 'light'
+
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        theme = 'dark'
+                    }
+                }
+            } else {
+                theme = (theme === 'dark') ? 'light' : 'dark'
+            }
+
+            const appBody = document.getElementsByName('body')
+            appBody.classList.replace('app-' + (theme === 'light' ? 'dark' : 'light'), 'app-' + theme)
         },
     },
 }

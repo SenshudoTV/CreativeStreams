@@ -30,6 +30,7 @@
                             </b-col>
                             <b-col :sm="6" :md="6" class="text-right">
                                 <b-button
+                                    v-if="isAuthorized"
                                     :variant="isFollowing ? 'danger' : 'success'"
                                     @click="handleFollowship"
                                 >
