@@ -8,12 +8,7 @@ import { BootstrapVue } from 'bootstrap-vue'
 import moment from 'moment'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import {
-    faComments,
-    faEye,
-    faHeart,
-    faHeartBroken,
-} from '@fortawesome/free-solid-svg-icons'
+import { faComments, faEye, faHeart, faHeartBroken } from '@fortawesome/free-solid-svg-icons'
 import {
     faDiscord,
     faFacebookF,

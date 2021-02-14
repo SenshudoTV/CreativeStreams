@@ -15,8 +15,9 @@ class CreateTags extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
-            $table->string('tag')->unique();
-            $table->string('tag_id')->unique();
+            $table->uuid('tag_id')->nullable();
+            $table->string('tag');
+            $table->string('tag_safe')->unique();
             $table->boolean('is_tag')->default(true);
             $table->boolean('is_hashtag')->default(false);
             $table->bigInteger('count')->default(0);

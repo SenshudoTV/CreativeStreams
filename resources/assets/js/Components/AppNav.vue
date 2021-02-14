@@ -26,10 +26,7 @@
                         </b-button>
                     </b-nav-item>
                     <b-nav-item>
-                        <b-button
-                            variant="outline-light"
-                            id="toggleTheme"
-                        >
+                        <b-button variant="outline-light" id="toggleTheme">
                             <font-awesome-icon :icon="['fas', themeIcon]" />
                         </b-button>
                     </b-nav-item>
@@ -82,16 +79,22 @@ export default {
                 if (theme === undefined && theme === null) {
                     theme = 'light'
 
-                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    if (
+                        window.matchMedia &&
+                        window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ) {
                         theme = 'dark'
                     }
                 }
             } else {
-                theme = (theme === 'dark') ? 'light' : 'dark'
+                theme = theme === 'dark' ? 'light' : 'dark'
             }
 
             const appBody = document.getElementsByName('body')
-            appBody.classList.replace('app-' + (theme === 'light' ? 'dark' : 'light'), 'app-' + theme)
+            appBody.classList.replace(
+                'app-' + (theme === 'light' ? 'dark' : 'light'),
+                'app-' + theme,
+            )
         },
     },
 }

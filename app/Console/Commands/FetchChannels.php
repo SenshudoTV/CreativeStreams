@@ -3,10 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Models\Channels;
+use App\Models\Tags;
 use Carbon\Carbon;
-use DB;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Console\Command;
+use Str;
 
 class FetchChannels extends Command
 {
@@ -25,23 +26,150 @@ class FetchChannels extends Command
     protected $description = 'Fetch all live creative channels';
 
     /**
+     * Guzzle Client
+     *
+     * @var GuzzleClient
+     */
+    protected $client;
+
+    /**
      * Blacklisted Tags
      *
      * @var array
      */
-    protected $blacklist;
+    protected $blacklist = [
+        'affiliate',
+        'affiliated',
+        'afk',
+        'alertcoronavi',
+        'anal',
+        'anus',
+        'arse',
+        'ass',
+        'balls',
+        'ballsack',
+        'bastard',
+        'bestlightsontwitch',
+        'biatch',
+        'bitch',
+        'bloody',
+        'blowjob',
+        'bollock',
+        'bollok',
+        'boner',
+        'boob',
+        'bugger',
+        'bum',
+        'butt',
+        'buttplug',
+        'cancer',
+        'clitoris',
+        'clubquarantine',
+        'cmon',
+        'cock',
+        'coon',
+        'cornavirus',
+        'coronaparty',
+        'covid',
+        'covid19',
+        'crap',
+        'cunt',
+        'damn',
+        'dick',
+        'dildo',
+        'dyke',
+        'fag',
+        'faggot',
+        'feck',
+        'felching',
+        'fellate',
+        'fellatio',
+        'flange',
+        'fuck',
+        'fucking',
+        'fudgepacker',
+        'gay',
+        'gaystreamer',
+        'goddamn',
+        'handsupwillneverdie',
+        'hell',
+        'hentai',
+        'homo',
+        'jerk',
+        'jizz',
+        'knobend',
+        'labia',
+        'lesbian',
+        'live',
+        'lmao',
+        'lmfao',
+        'mature',
+        'muff',
+        'nigga',
+        'nigger',
+        'nude',
+        'omg',
+        'partner',
+        'penis',
+        'piss',
+        'poop',
+        'porn',
+        'poundsign',
+        'prick',
+        'pube',
+        'pussy',
+        'quaranstream',
+        'quarantine',
+        'quarantineandchill',
+        'quarantunes',
+        'quedateencasa',
+        'queer',
+        'queerbeat',
+        'restezchezvous',
+        'scrotum',
+        'sex',
+        'sh1t',
+        'shit',
+        'slut',
+        'smallstreamer',
+        'smallstreamers',
+        'smegma',
+        'spunk',
+        'streamers',
+        'supportistkeinmord',
+        'testy',
+        'tit',
+        'tosser',
+        'trans',
+        'translifeline',
+        'transtagnow',
+        'turd',
+        'twat',
+        'twitch',
+        'twitchaffiliate',
+        'twitchde',
+        'twitchdj',
+        'twitchkittens',
+        'vagina',
+        'wank',
+        'washhands',
+        'whore',
+        'wow',
+        'wtf',
+        'xoxo',
+    ];
 
     /**
      * Global Tags
      *
      * @var array
      */
-    protected $tags;
+    protected $tags = [];
 
     /**
      * Total Requests Made
      *
-     * @var integer
+     * @var int
      */
     protected $requestCount = 0;
 
@@ -54,126 +182,13 @@ class FetchChannels extends Command
     {
         parent::__construct();
 
-        $this->blacklist = [
-            'affiliate',
-            'affiliated',
-            'afk',
-            'alertcoronavi',
-            'anal',
-            'anus',
-            'arse',
-            'ass',
-            'balls',
-            'ballsack',
-            'bastard',
-            'bestlightsontwitch',
-            'biatch',
-            'bitch',
-            'bloody',
-            'blowjob',
-            'bollock',
-            'bollok',
-            'boner',
-            'boob',
-            'bugger',
-            'bum',
-            'butt',
-            'buttplug',
-            'cancer',
-            'clitoris',
-            'clubquarantine',
-            'cmon',
-            'cock',
-            'coon',
-            'cornavirus',
-            'coronaparty',
-            'covid',
-            'covid19',
-            'crap',
-            'cunt',
-            'damn',
-            'dick',
-            'dildo',
-            'dyke',
-            'fag',
-            'faggot',
-            'feck',
-            'felching',
-            'fellate',
-            'fellatio',
-            'flange',
-            'fuck',
-            'fucking',
-            'fudgepacker',
-            'gay',
-            'gaystreamer',
-            'goddamn',
-            'handsupwillneverdie',
-            'hell',
-            'hentai',
-            'homo',
-            'jerk',
-            'jizz',
-            'knobend',
-            'labia',
-            'lesbian',
-            'live',
-            'lmao',
-            'lmfao',
-            'mature',
-            'muff',
-            'nigga',
-            'nigger',
-            'nude',
-            'omg',
-            'penis',
-            'piss',
-            'poop',
-            'porn',
-            'poundsign',
-            'prick',
-            'pube',
-            'pussy',
-            'quaranstream',
-            'quarantine',
-            'quarantineandchill',
-            'quarantunes',
-            'quedateencasa',
-            'queer',
-            'queerbeat',
-            'restezchezvous',
-            'scrotum',
-            'sex',
-            'sh1t',
-            'shit',
-            'slut',
-            'smallstreamer',
-            'smallstreamers',
-            'smegma',
-            'spunk',
-            'streamers',
-            'supportistkeinmord',
-            'testy',
-            'tit',
-            'tosser',
-            'trans',
-            'translifeline',
-            'transtagnow',
-            'turd',
-            'twat',
-            'twitch',
-            'twitchaffiliate',
-            'twitchde',
-            'twitchdj',
-            'twitchkittens',
-            'vagina',
-            'wank',
-            'washhands',
-            'whore',
-            'wow',
-            'wtf',
-            'xoxo',
-        ];
+        $this->client = new GuzzleClient([
+            'base_uri'  => 'https://api.twitch.tv/helix/',
+            'headers'   => [
+                'Client-ID' => config('app.twitch.id'),
+                'Authorization' => 'Bearer ' . config('app.twitch.token'),
+            ],
+        ]);
     }
 
     /**
@@ -210,20 +225,12 @@ class FetchChannels extends Command
             'Food & Drink' => 509662,
             'Makers & Crafting' => 509673,
             'Music & Performing Arts' => 26936,
-            'Science & Technology' => 509670
+            'Science & Technology' => 509670,
         ];
 
         $gameIds = '&game_id=' . implode('&game_id=', $catIDs);
 
-        $client = new GuzzleClient([
-            'base_uri'  => 'https://api.twitch.tv/helix/',
-            'headers'   => [
-                'Client-ID' => config('app.twitch.id'),
-                'Authorization' => 'Bearer ' . config('app.twitch.token'),
-            ],
-        ]);
-
-        $response = $client->request('GET', 'streams?first=100' . $gameIds . $cursor);
+        $response = $this->client->request('GET', 'streams?first=100' . $gameIds . $cursor);
 
         if ($response->getStatusCode() === 200) {
             $responseBody = json_decode($response->getBody()->getContents());
@@ -239,25 +246,31 @@ class FetchChannels extends Command
                         'views'     => 0,
                     ];
 
-                    $userResponse = $client->request('GET', 'users?id=' . $stream->user_id);
+                    $userResponse = $this->client->request('GET', 'users?id=' . $stream->user_id);
                     $this->requestCount += 1;
 
-                    $userResponseBody = json_decode($userResponse->getBody()->getContents());
+                    if ($userResponse->getStatusCode() === 200) {
+                        $userResponseBody = json_decode($userResponse->getBody()->getContents());
 
-                    if (! empty($userResponseBody) && ! empty($userResponseBody->data)) {
-                        if (! empty($userResponseBody->data[0]->login)) {
-                            $user = [
-                                'slug'      => $userResponseBody->data[0]->login,
-                                'partner'   => (! empty($userResponseBody->data[0]->broadcaster_type) && $userResponseBody->data[0]->broadcaster_type  == "partner") ? true : false,
-                                'avatar'    => $userResponseBody->data[0]->profile_image_url,
-                                'views'     => $userResponseBody->data[0]->view_count,
-                            ];
+                        if (! empty($userResponseBody) && ! empty($userResponseBody->data)) {
+                            if (! empty($userResponseBody->data[0]->login)) {
+                                $user = [
+                                    'slug'      => $userResponseBody->data[0]->login,
+                                    'partner'   => (! empty($userResponseBody->data[0]->broadcaster_type) && $userResponseBody->data[0]->broadcaster_type == 'partner') ? true : false,
+                                    'avatar'    => $userResponseBody->data[0]->profile_image_url,
+                                    'views'     => $userResponseBody->data[0]->view_count,
+                                ];
+                            }
                         }
                     }
 
-                    $this->populateTags($stream->title, (! empty($stream->tag_ids) ? $stream->tag_ids : array()));
+                    $this->populateHashtags($stream->title);
 
-                    $channels = Channels::updateOrCreate([
+                    $this->populateTags(
+                        (! empty($stream->tag_ids) && $stream->tag_ids !== null ? $stream->tag_ids : [])
+                    );
+
+                    Channels::updateOrCreate([
                         'id'                    => $stream->user_id,
                     ], [
                         'id'                    => $stream->user_id,
@@ -268,59 +281,171 @@ class FetchChannels extends Command
                         'title'                 => $stream->title,
                         'game_id'               => $stream->game_id,
                         'avatar'                => $user['avatar'],
-                        'thumbnail'             => str_replace(['{width}','{height}'], [600, 337], $stream->thumbnail_url),
+                        'thumbnail'             => str_replace(
+                            ['{width}','{height}'],
+                            [600, 337],
+                            $stream->thumbnail_url
+                        ),
                         'views'                 => $user['views'],
                         'viewers'               => $stream->viewer_count,
                         'partner'               => $user['partner'],
                         'tags'                  => json_encode($stream->tag_ids),
                     ]);
+                }
 
-                    // TODO: Loop Function & Store Tags
+                if ($this->shouldWait()) {
+                    sleep(60);
+                    $this->requestCount = 0;
+                }
+
+                if (! empty($responseBody->pagination) && property_exists($responseBody->pagination, 'cursor')) {
+                    $this->fetchStreams($responseBody->pagination->cursor);
+                } else {
+                    $this->updateTags();
+                }
+            } else {
+                $this->updateTags();
+            }
+        }
+    }
+
+    /**
+     * Should wait if request count is greater than 600 to prevent hitting API Rate-Limit.
+     *
+     * @return bool
+     */
+    private function shouldWait()
+    {
+        if ($this->requestCount >= 600) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Populate global Tags for processing
+     *
+     * @param array $tag_ids Stream Known Tags
+     * @return void
+     */
+    private function populateTags(array $tag_ids = []): void
+    {
+        $searchTags = [];
+
+        if (! empty($tag_ids)) {
+            foreach ($tag_ids as $tag) {
+                if (! in_array($tag, array_column($this->tags, 'tag_id'))) {
+                    if (! in_array($tag, $searchTags)) {
+                        $name = null;
+
+                        $tagDB = Tags::where('tag_id', $tag)->first();
+
+                        if ($tagDB) {
+                            if (! empty($tagDB->tag)) {
+                                $name = $tagDB->tag;
+                            } else {
+                                $searchTags[] = $tag;
+                            }
+                        } else {
+                            $searchTags[] = $tag;
+                        }
+
+                        $this->tags[] = [
+                            'tag'           => $name,
+                            'tag_safe'      => Str::slug($name),
+                            'tag_id'        => $tag,
+                            'is_tag'        => true,
+                            'is_hashtag'    => false,
+                            'count'         => 1,
+                        ];
+                    }
+                } else {
+                    $key = array_search($tag, array_column($this->tags, 'tag_id'));
+
+                    $this->tags[$key]['count'] += 1;
+                }
+            }
+        }
+
+        if (! empty($searchTags)) {
+            $tagChunks = array_chunk($searchTags, 100, false);
+
+            foreach ($tagChunks as $tags) {
+                $tagResponse = $this->client->request('GET', 'tags/streams?tag_id=' . implode('&tag_id=', $tags));
+                $this->requestCount += 1;
+
+                if ($tagResponse->getStatusCode() === 200) {
+                    $tagResponseBody = json_decode($tagResponse->getBody()->getContents());
+
+                    if (! empty($tagResponseBody) && ! empty($tagResponseBody->data)) {
+                        foreach ($tagResponseBody->data as $tag) {
+                            if (in_array($tag->tag_id, array_column($this->tags, 'tag_id'))) {
+                                $key = array_search($tag->tag_id, array_column($this->tags, 'tag_id'));
+
+                                $this->tags[$key]['tag'] = $tag->localization_names->{'en-us'};
+                                $this->tags[$key]['tag_safe'] = Str::slug($tag->localization_names->{'en-us'});
+                            }
+                        }
+                    }
+                }
+
+                if ($this->shouldWait()) {
+                    sleep(60);
+                    $this->requestCount = 0;
                 }
             }
         }
     }
 
     /**
-     * Populate the global Tags Variable for processing
+     * Find hashtags within the streams title for population
      *
-     * @param string $title Stream Title
-     * @param array $tag_ids Stream Known Tags
+     * @param array $title Stream Title
      * @return void
      */
-    private function populateTags(string $title = null, array $tag_ids = []): void
+    private function populateHashtags(string $title = null): void
     {
-        preg_match_all("/(?<=^|\P{L})(#\b\p{L}[\p{L}\d_]+)/u", $title, $matches);
+        if (! empty($title)) {
+            preg_match_all("/(?<=^|\P{L})(#\b\p{L}[\p{L}\d_]+)/u", $title, $matches);
 
-        if (! empty($matches)) {
-            foreach ($matches[0] as $key => $hash) {
-                $hashtag = str_replace('#', '', strtolower($hash));
+            if (! empty($matches)) {
+                foreach ($matches[0] as $hash) {
+                    $hashtag = str_replace('#', '', strtolower($hash));
 
-                if (in_array($hashtag, $this->blacklist) !== true) {
-                    if (! array_key_exists($hashtag, $this->tags)) {
-                        $this->tags[$hashtag] = [
-                            'is_hashtag'    => true,
-                            'is_tag'        => false,
-                            'count'         => 1,
-                        ];
-                    } else {
-                        $this->tags[$hashtag]['count'] += 1;
+                    if (in_array($hashtag, $this->blacklist) !== true) {
+                        if (! in_array($hashtag, array_column($this->tags, 'tag'))) {
+                            $this->tags[] = [
+                                'tag'           => $hashtag,
+                                'tag_safe'      => Str::slug($hashtag),
+                                'tag_id'        => null,
+                                'is_tag'        => false,
+                                'is_hashtag'    => true,
+                                'count'         => 1,
+                            ];
+                        } else {
+                            $key = array_search($hashtag, array_column($this->tags, 'tag'));
+
+                            $this->tags[$key]['count'] += 1;
+                        }
                     }
                 }
             }
         }
-        
-        if (! empty($tag_ids)) {
-            foreach ($tag_ids as $tag) {
-                if (! array_key_exists($tag, $this->tags)) {
-                    $this->tags[$tag] = [
-                        'is_hashtag'    => false,
-                        'is_tag'        => true,
-                        'count'         => 1,
-                    ];
-                } else {
-                    $this->tags[$tag] += 1;
-                }
+    }
+
+    /**
+     * Update Tags Table
+     *
+     * @return void
+     */
+    private function updateTags(): void
+    {
+        if (! empty($this->tags)) {
+            foreach ($this->tags as $tag) {
+                Tags::updateOrCreate([
+                    'tag_safe'    => $tag['tag_safe'],
+                ], $tag);
             }
         }
     }

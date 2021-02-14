@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import {
     AUTH_LOGIN,
     AUTH_REDIRECT,
@@ -7,7 +8,6 @@ import {
     AUTH_EXPIRED,
 } from '@/Store/Actions/Authentication'
 import { USER_UPDATE, USER_LOGOUT } from '@/Store/Actions/User'
-import { Inertia } from '@inertiajs/inertia'
 
 const siteUrl =
     'https://' +
@@ -42,38 +42,48 @@ export default {
 
             window.location.href =
                 'https://id.twitch.tv/oauth2/authorize?' +
-                'client_id=' +
-                Twitch.ClientID +
-                '&redirect_uri=' +
+                'client_id=j083teggo6u0ls77yfy9medgxdtli1&redirect_uri=' +
                 encodeURI(siteUrl) +
-                '&response_type=token' +
-                '&scope=user_follows_edit'
+                '&response_type=token&scope=user_follows_edit'
         },
         [AUTH_REDIRECT]: ({ commit }, hash) => {
             if (hash) {
-                const user = window.axios.get('https://api.twitch.tv/kraken', {
-                    headers: { Authorization: 'OAuth ' + hash.access_token },
-                })
+                window.twitchAPI.defaults.headers.common['Authorization'] =
+                    'OAuth ' + hash.access_token
 
-                if (user.data) {
-                    const expires = moment().add(1, 'hours').toDate()
+                window.twitchAPI
+                    .get('/')
+                    .then((response) => {
+                        if (
+                            response.data.token.valid === true &&
+                            response.data.token.client_id === 'j083teggo6u0ls77yfy9medgxdtli1'
+                        ) {
+                            const expires = Vue.prototype.moment().add(1, 'hours').toDate()
 
-                    const userData = {
-                        token: hash.access_token,
-                        id: parseInt(user.data.token.user_id),
-                        name: user.data.token.user_name,
-                        expires: expires,
-                    }
+                            const userData = {
+                                token: hash.access_token,
+                                id: parseInt(response.data.token.user_id),
+                                name: response.data.token.user_name,
+                                expires: expires,
+                            }
 
-                    localStorage.setItem('userToken', JSON.stringify(userData))
+                            localStorage.setItem('userToken', JSON.stringify(userData))
 
-                    Inertia.get('/', {}, { replace: true })
+                            Vue.prototype.$inertia.get(
+                                '/',
+                                {},
+                                { replace: true, preserveState: true, preserveScroll: true },
+                            )
 
-                    commit(USER_UPDATE, { id: userData.id, name: userData.name })
-                    commit(AUTH_SUCCESS, hash.access_token)
-                } else {
-                    commit(AUTH_ERROR, 'Failed to retrieve user details')
-                }
+                            commit(USER_UPDATE, { id: userData.id, name: userData.name })
+                            commit(AUTH_SUCCESS, hash.access_token)
+                        } else {
+                            commit(AUTH_ERROR)
+                        }
+                    })
+                    .catch(() => {
+                        commit(AUTH_ERROR, 'Failed to retrieve user details')
+                    })
             } else {
                 commit(AUTH_ERROR)
             }
@@ -85,7 +95,7 @@ export default {
             commit(USER_LOGOUT)
             commit(AUTH_LOGOUT)
 
-            window.axios.defaults.headers.common['Authorization'] = null
+            window.twitchAPI.defaults.headers.common['Authorization'] = null
 
             localStorage.removeItem('userToken')
         },

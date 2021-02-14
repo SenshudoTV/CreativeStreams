@@ -27,11 +27,16 @@ export default {
                 userData = JSON.parse(userData)
 
                 if (moment(userData.expires).toDate() > moment().toDate()) {
-                    window.axios.defaults.headers.common['Authorization'] = 'OAuth ' + userData.token
+                    window.twitchAPI.defaults.headers.common['Authorization'] =
+                        'OAuth ' + userData.token
 
-                    window.axios.get('https://id.twitch.tv/oauth2/validate')
+                    window.twitchAPI
+                        .get('/')
                         .then((response) => {
-                            if (response.data.client_id === 'j083teggo6u0ls77yfy9medgxdtli1') {
+                            if (
+                                response.data.token.valid === true &&
+                                response.data.token.client_id === 'j083teggo6u0ls77yfy9medgxdtli1'
+                            ) {
                                 commit(USER_UPDATE, {
                                     id: userData.id,
                                     name: userData.name,

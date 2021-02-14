@@ -16,8 +16,9 @@ class Tags extends Model
      * @var array
      */
     protected $fillable = [
-        'tag',
         'tag_id',
+        'tag',
+        'tag_safe',
         'is_tag',
         'is_hashtag',
         'count',
