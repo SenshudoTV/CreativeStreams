@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
     faComments,
     faEye,
+    faFilter,
     faHeart,
     faHeartBroken,
     faMoon,
@@ -39,6 +40,7 @@ library.add(
     faDiscord,
     faEye,
     faFacebookF,
+    faFilter,
     faGoogle,
     faGithub,
     faHeart,

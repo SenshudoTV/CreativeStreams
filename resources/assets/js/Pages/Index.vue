@@ -1,18 +1,29 @@
 <template>
     <div>
-        <Featured />
+        <Featured :channel="selected" />
         <b-container>
-            <b-row>
-                <b-col :sm="12" :md="6" :lg="6">{{ total }} Streams</b-col>
-                <b-col :sm="12" :md="6" :lg="6"></b-col>
+            <b-row v-if="total > 0" class="mb-2">
+                <b-col :sm="12" :md="6" :lg="6" class="pl-0">
+                    <h2 class="mb-0" id="streamHeading">{{ total }} Streams</h2>
+                </b-col>
+                <b-col :sm="12" :md="6" :lg="6" class="pr-0 text-right">
+                    <b-button variant="primary" @click.prevent="toggleFilters">
+                        <font-awesome-icon :icon="['fas', 'filter']" />
+                        Filter
+                    </b-button>
+                </b-col>
             </b-row>
-            <b-row class="mb-4" id="filterContainer">
+            <b-row class="mb-4" id="filterContainer" v-if="filters">
                 <b-col :sm="12" :md="6" :lg="6"></b-col>
                 <b-col :sm="12" :md="6" :lg="6"></b-col>
             </b-row>
             <b-row>
                 <b-col v-if="loading" class="loading text-center">
-                    <div class="lds-ring mb-2">
+                    <div class="lds-roller mb-2">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                         <div></div>
                         <div></div>
                         <div></div>
@@ -29,6 +40,7 @@
                     <Channel
                         v-for="channel in channels"
                         :key="`channel${channel.id}`"
+                        :active="selected !== undefined ? selected.id === channel.id : false"
                         :id="channel.id"
                         :name="channel.name"
                         :slug="channel.slug"
@@ -38,6 +50,7 @@
                         :partner="channel.partner"
                         :avatarSRC="channel.avatar"
                         :thumbnailSRC="channel.thumbnail"
+                        @click="handleClick"
                     />
                     <b-col :sm="12" :md="12" :lg="12" v-if="meta.last_page > 1">
                         <nav class="my-4" aria-label="Page Navigation">
@@ -81,8 +94,9 @@ export default {
         return {
             loading: true,
             error: false,
+            filters: false,
             total: 0,
-            selected: {},
+            selected: undefined,
             channels: [],
             meta: [],
         }
@@ -91,6 +105,11 @@ export default {
         this.fetchChannels()
     },
     methods: {
+        handleClick: function (channel) {
+            if (channel !== undefined && channel !== null) {
+                this.selected = channel
+            }
+        },
         fetchChannels: function (link = null) {
             let page = 1
 
@@ -113,6 +132,9 @@ export default {
                     this.error = true
                     this.loading = false
                 })
+        },
+        toggleFilters: function () {
+            this.filters = !this.filters
         },
     },
 }

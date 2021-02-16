@@ -1,3 +1,6 @@
+$purple: rgb(100, 65, 164);
+$primary: $purple;
+
 @import '~bootstrap/scss/bootstrap.scss';
 @import 'mixins';
 @import 'fonts';
@@ -70,6 +73,10 @@ html {
         box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14),
             0px 4px 18px 3px rgba(0, 0, 0, 0.12);
         z-index: 1;
+
+        & > .embed-responsive {
+            background-color: rgba($purple, 0.75);
+        }
     }
 
     .playerBtns {
@@ -84,35 +91,99 @@ html {
     }
 }
 
-.lds-ring {
+.lds-roller {
     display: inline-block;
     position: relative;
     width: 80px;
     height: 80px;
 
-    div {
-        box-sizing: border-box;
-        display: block;
-        position: absolute;
-        width: 64px;
-        height: 64px;
-        margin: 8px;
-        border: 8px solid $purple;
-        border-radius: 50%;
-        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        border-color: $purple transparent transparent transparent;
-    }
+    & > div {
+        transition: all 0.3s ease-in !important;
+        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite !important;
+        transform-origin: 40px 40px;
 
-    div:nth-child(1) {
-        animation-delay: -0.45s;
-    }
+        &::after {
+            content: ' ';
+            display: block;
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: $purple;
+            margin: -4px 0 0 -4px;
+        }
 
-    div:nth-child(2) {
-        animation-delay: -0.3s;
-    }
+        &:nth-child(1) {
+            animation-delay: -0.036s !important;
+        }
 
-    div:nth-child(3) {
-        animation-delay: -0.15s;
+        &:nth-child(1)::after {
+            top: 63px;
+            left: 63px;
+        }
+
+        &:nth-child(2) {
+            animation-delay: -0.072s !important;
+        }
+
+        &:nth-child(2)::after {
+            top: 68px;
+            left: 56px;
+        }
+
+        &:nth-child(3) {
+            animation-delay: -0.108s !important;
+        }
+
+        &:nth-child(3)::after {
+            top: 71px;
+            left: 48px;
+        }
+
+        &:nth-child(4) {
+            animation-delay: -0.144s !important;
+        }
+
+        &:nth-child(4)::after {
+            top: 72px;
+            left: 40px;
+        }
+
+        &:nth-child(5) {
+            animation-delay: -0.18s !important;
+        }
+
+        &:nth-child(5)::after {
+            top: 71px;
+            left: 32px;
+        }
+
+        &:nth-child(6) {
+            animation-delay: -0.216s !important;
+        }
+
+        &:nth-child(6)::after {
+            top: 68px;
+            left: 24px;
+        }
+
+        &:nth-child(7) {
+            animation-delay: -0.252s !important;
+        }
+
+        &:nth-child(7)::after {
+            top: 63px;
+            left: 17px;
+        }
+
+        &:nth-child(8) {
+            animation-delay: -0.288s !important;
+        }
+
+        &:nth-child(8)::after {
+            top: 56px;
+            left: 12px;
+        }
     }
 }
 
@@ -140,7 +211,8 @@ html {
         background-color: rgba(255, 255, 255, 0.075);
     }
 
-    &:hover {
+    &:hover,
+    &.active {
         &::before {
             display: block;
         }
@@ -271,11 +343,13 @@ html {
     }
 }
 
-@keyframes lds-ring {
+@include keyframes(lds-roller) {
     0% {
+        -webkit-transform: rotate(0deg);
         transform: rotate(0deg);
     }
     100% {
+        -webkit-transform: rotate(360deg);
         transform: rotate(360deg);
     }
 }
@@ -350,3 +424,5 @@ html {
         }
     }
 }
+
+@import '_dark';

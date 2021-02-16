@@ -1,5 +1,5 @@
 <template>
-    <header class="featured mb-4" id="featuredStream">
+    <header class="featured mb-2" id="featuredStream">
         <div class="fancyAnimationLayer animated fadeIn" v-if="animations.length">
             <template v-for="(animation, animationIndex) in animations">
                 <div
@@ -38,7 +38,7 @@
                                 </b-button>
                                 <b-button
                                     variant="light"
-                                    :href="`https://www.twitch.tv/${featuredChannel.url}`"
+                                    :href="`https://www.twitch.tv/${featuredChannel.slug}`"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
@@ -59,14 +59,21 @@ import { mapGetters } from 'vuex'
 
 export default {
     name: 'Featured',
+    props: {
+        channel: {
+            type: Object,
+            required: false,
+        },
+    },
     data() {
         return {
             animations: [],
             isFollowing: false,
+            EmbedAPi: null,
             featuredChannel: {
-                id: 0,
+                id: 12826,
                 name: 'Twitch',
-                url: 'twitch',
+                slug: 'twitch',
                 viewers: 0,
             },
         }
@@ -95,28 +102,30 @@ export default {
                 .get(this.route('channels.random'))
                 .then((response) => {
                     this.featuredChannel = {
-                        id: response.data.id,
-                        name: response.data.name,
-                        url: response.data.slug,
-                        viewers: response.data.viewers,
+                        id: response.data.data.id,
+                        name: response.data.data.name,
+                        slug: response.data.data.slug,
+                        viewers: response.data.data.viewers,
                     }
-
+                })
+                .catch(() => {
+                    this.featuredChannel = {
+                        id: 12826,
+                        name: 'Twitch',
+                        slug: 'twitch',
+                        viewers: 0,
+                    }
+                })
+                .then(() => {
                     this.EmbedAPi = new window.Twitch.Embed('channelEmbed', {
                         width: 847,
                         height: 476,
                         playsinline: true,
                         layout: 'video',
-                        channel: response.data.slug,
+                        channel: this.featuredChannel.id,
                         theme: 'dark',
+                        parent: ['www.creativestreams.tv', 'development.creativetsreams.tv'],
                     })
-                })
-                .catch(() => {
-                    this.featuredChannel = {
-                        id: 0,
-                        name: 'Twitch',
-                        url: 'twitch',
-                        viewers: 0,
-                    }
                 })
         },
         handleFollowship: function () {
@@ -124,8 +133,12 @@ export default {
         },
     },
     watch: {
-        url: function (newUrl) {
-            window.twitch.setChannel(newUrl)
+        channel: function (newChannel) {
+            if (newChannel !== undefined && newChannel !== null) {
+                this.featuredChannel = newChannel
+
+                this.EmbedAPi.setChannel(newChannel.id)
+            }
         },
     },
 }

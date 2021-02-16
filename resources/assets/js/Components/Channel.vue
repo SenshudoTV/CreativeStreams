@@ -1,5 +1,5 @@
 <template>
-    <div class="channel-card">
+    <div :class="{ 'channel-card': true, active: active }" @click="handleClick">
         <div class="channel-thumbnail" :style="`background-image: url(${thumbnailSRC});`">
             <div class="channel-partnered" v-if="partner">
                 <font-awesome-icon :icon="['fas', 'badge-check']" />
@@ -78,6 +78,21 @@ export default {
             type: String,
             required: false,
             default: GenericAvatarWEBP,
+        },
+        active: {
+            type: Boolean,
+            require: false,
+            default: false,
+        },
+    },
+    methods: {
+        handleClick: function () {
+            this.$emit('click', {
+                id: this.id,
+                name: this.name,
+                slug: this.slug,
+                viewers: this.viewers,
+            })
         },
     },
 }
