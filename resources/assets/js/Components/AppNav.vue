@@ -6,17 +6,16 @@
                     :src="Logo"
                     class="logo"
                     alt="Creative Streams"
-                    aria-label="Creative Streams Brought to you by Senshudo"
+                    aria-label="Creative Streams brought to you by Senshudo"
                 />
             </b-navbar-brand>
             <b-navbar-toggle target="nav-collapse" />
 
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav class="ml-auto">
-                    <b-nav-item>
+                    <li class="nav-item">
                         <b-button
-                            variant="link"
-                            class="text-light"
+                            variant="outline-light"
                             href="https://github.com/SenshudoTV/CreativeStreams"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -24,18 +23,23 @@
                         >
                             <font-awesome-icon :icon="['fab', 'github']" />
                         </b-button>
-                    </b-nav-item>
-                    <b-nav-item>
-                        <b-button variant="outline-light" id="toggleTheme">
-                            <font-awesome-icon :icon="['fas', themeIcon]" />
+                    </li>
+                    <li class="nav-item px-1">
+                        <b-button
+                            variant="outline-light"
+                            id="toggleTheme"
+                            :title="`Toggle ${theme.mode} theme`"
+                            @click.prevent="toggleTheme(false)"
+                        >
+                            <font-awesome-icon :icon="['fas', theme.icon]" />
                         </b-button>
-                    </b-nav-item>
-                    <b-nav-item>
+                    </li>
+                    <li class="nav-item">
                         <b-button variant="outline-light" @click="authorize">
                             <font-awesome-icon :icon="['fab', 'twitch']" />
                             Sign {{ !isAuthorized ? 'In' : 'Out' }}
                         </b-button>
-                    </b-nav-item>
+                    </li>
                 </b-navbar-nav>
             </b-collapse>
         </b-container>
@@ -53,7 +57,10 @@ export default {
     data() {
         return {
             Logo: LogoImg,
-            themeIcon: 'moon',
+            theme: {
+                icon: 'moon',
+                mode: 'dark',
+            },
         }
     },
     computed: {
@@ -71,30 +78,37 @@ export default {
             }
         },
         toggleTheme(initialSetup = false) {
-            let theme = 'light'
-
             if (initialSetup) {
-                theme = localStorage.getItem('app-theme')
+                const themeStored = localStorage.getItem('app-theme')
 
-                if (theme === undefined && theme === null) {
-                    theme = 'light'
+                if (themeStored === undefined || themeStored === null) {
+                    this.theme.icon = 'moon'
+                    this.theme.mode = 'dark'
 
                     if (
                         window.matchMedia &&
                         window.matchMedia('(prefers-color-scheme: dark)').matches
                     ) {
-                        theme = 'dark'
+                        this.theme.icon = 'sun'
+                        this.theme.mode = 'light'
                     }
+                } else {
+                    const targetTheme = JSON.parse(themeStored)
+
+                    this.theme.icon = targetTheme.icon
+                    this.theme.mode = targetTheme.mode
                 }
             } else {
-                theme = theme === 'dark' ? 'light' : 'dark'
+                this.theme.icon = this.theme.icon === 'moon' ? 'sun' : 'moon'
+                this.theme.mode = this.theme.mode === 'dark' ? 'light' : 'dark'
             }
 
-            const appBody = document.getElementsByName('body')
-            appBody.classList.replace(
-                'app-' + (theme === 'light' ? 'dark' : 'light'),
-                'app-' + theme,
+            document.body.classList.replace(
+                'app-' + this.theme.mode,
+                'app-' + (this.theme.mode === 'light' ? 'dark' : 'light'),
             )
+
+            localStorage.setItem('app-theme', JSON.stringify(this.theme))
         },
     },
 }

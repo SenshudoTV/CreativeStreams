@@ -1,5 +1,5 @@
 <template>
-    <footer class="AppFooter text-light">
+    <footer class="AppFooter text-light mt-auto">
         <b-container>
             <b-row>
                 <b-col :sm="12" :md="4"></b-col>

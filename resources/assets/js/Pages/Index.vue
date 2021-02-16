@@ -1,15 +1,65 @@
 <template>
     <div>
-        <Featured
-            :id="featuredChannel.id"
-            :name="featuredChannel.name"
-            :url="featuredChannel.url"
-            :viewers="featuredChannel.viewers"
-        />
-        <b-container fluid>
+        <Featured />
+        <b-container>
             <b-row>
+                <b-col :sm="12" :md="6" :lg="6">{{ total }} Streams</b-col>
+                <b-col :sm="12" :md="6" :lg="6"></b-col>
+            </b-row>
+            <b-row class="mb-4" id="filterContainer">
                 <b-col :sm="12" :md="6" :lg="6"></b-col>
                 <b-col :sm="12" :md="6" :lg="6"></b-col>
+            </b-row>
+            <b-row>
+                <b-col v-if="loading" class="loading text-center">
+                    <div class="lds-ring mb-2">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <p>Loading Streams...</p>
+                </b-col>
+                <b-col v-else-if="error">
+                    <b-alert variant="danger" class="text-center flex-fill" show>
+                        Failed to fetch streams.
+                    </b-alert>
+                </b-col>
+                <template v-else>
+                    <Channel
+                        v-for="channel in channels"
+                        :key="`channel${channel.id}`"
+                        :id="channel.id"
+                        :name="channel.name"
+                        :slug="channel.slug"
+                        :title="channel.title"
+                        :category="channel.category"
+                        :viewers="channel.viewers"
+                        :partner="channel.partner"
+                        :avatarSRC="channel.avatar"
+                        :thumbnailSRC="channel.thumbnail"
+                    />
+                    <b-col :sm="12" :md="12" :lg="12" v-if="meta.last_page > 1">
+                        <nav class="my-4" aria-label="Page Navigation">
+                            <ul class="pagination justify-content-center">
+                                <li
+                                    v-for="(link, index) in meta.links"
+                                    :key="`pageItem${index}`"
+                                    class="page-item"
+                                    :class="{ disabled: link.url === null, active: link.active }"
+                                >
+                                    <a
+                                        class="page-link"
+                                        href="#"
+                                        v-html="link.label"
+                                        @click.prevent="fetchChannels(link.url)"
+                                        :aria-disabled="link.url === null"
+                                    ></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </b-col>
+                </template>
             </b-row>
         </b-container>
     </div>
@@ -18,50 +68,50 @@
 <script>
 import Layout from '@/Shared/Layout'
 import Featured from '@/Components/Featured'
+import Channel from '@/Components/Channel'
 
 export default {
     name: 'Index',
     layout: Layout,
     components: {
         Featured,
+        Channel,
     },
     data() {
         return {
-            featuredChannel: {
-                id: 0,
-                name: 'Twitch',
-                url: 'twitch',
-                viewers: 0,
-            },
+            loading: true,
+            error: false,
+            total: 0,
+            selected: {},
+            channels: [],
+            meta: [],
         }
     },
     mounted() {
-        const script = document.createElement('script')
-        script.setAttribute('src', 'https://embed.twitch.tv/embed/v1.js')
-        script.addEventListener('load', this.fetchFeaturedStream())
-        document.body.appendChild(script)
+        this.fetchChannels()
     },
     methods: {
-        fetchFeaturedStream() {
+        fetchChannels: function (link = null) {
+            let page = 1
+
+            if (link !== null) {
+                const url = new URL(link)
+
+                page = parseInt(url.searchParams.get('page'))
+            }
+
             window.axios
-                .get('/streams/random')
+                .get(this.route('channels.list', { page: page }))
                 .then((response) => {
-                    this.featuredChannel = {
-                        id: response.data.id,
-                        name: response.data.name,
-                        url: response.data.url,
-                        viewers: response.data.viewers,
-                    }
+                    this.loading = false
+                    this.error = false
+                    this.channels = response.data.data
+                    this.meta = response.data.meta
+                    this.total = response.data.meta.total
                 })
                 .catch(() => {
-                    this.featuredChannel = {
-                        id: 0,
-                        name: 'Twitch',
-                        url: 'twitch',
-                        viewers: 0,
-                    }
-
-                    // TODO: Display Error
+                    this.error = true
+                    this.loading = false
                 })
         },
     },

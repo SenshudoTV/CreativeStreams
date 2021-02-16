@@ -24,7 +24,7 @@
                                 <div class="p-2 text-light">
                                     <font-awesome-icon :icon="['fas', 'eye']" />
                                     <span id="viewers">
-                                        {{ formatNumber(viewers) }}
+                                        {{ this.formatNumber(featuredChannel.viewers) }}
                                     </span>
                                 </div>
                             </b-col>
@@ -38,7 +38,7 @@
                                 </b-button>
                                 <b-button
                                     variant="light"
-                                    :href="url"
+                                    :href="`https://www.twitch.tv/${featuredChannel.url}`"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
@@ -59,28 +59,16 @@ import { mapGetters } from 'vuex'
 
 export default {
     name: 'Featured',
-    props: {
-        id: {
-            type: Number,
-            default: 0,
-        },
-        name: {
-            type: String,
-            default: 'Twitch',
-        },
-        url: {
-            type: String,
-            default: 'twitch',
-        },
-        viewers: {
-            type: Number,
-            default: 0,
-        },
-    },
     data() {
         return {
             animations: [],
             isFollowing: false,
+            featuredChannel: {
+                id: 0,
+                name: 'Twitch',
+                url: 'twitch',
+                viewers: 0,
+            },
         }
     },
     computed: {
@@ -95,19 +83,47 @@ export default {
                 top: (Math.random() * (90 - 5)).toFixed(14) + '%',
             })
         }
+
+        const script = document.createElement('script')
+        script.setAttribute('src', 'https://embed.twitch.tv/embed/v1.js')
+        script.addEventListener('load', this.fetchFeaturedStream())
+        document.body.appendChild(script)
     },
     methods: {
-        formatNumber(num) {
-            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        fetchFeaturedStream: function () {
+            window.axios
+                .get(this.route('channels.random'))
+                .then((response) => {
+                    this.featuredChannel = {
+                        id: response.data.id,
+                        name: response.data.name,
+                        url: response.data.slug,
+                        viewers: response.data.viewers,
+                    }
+
+                    this.EmbedAPi = new window.Twitch.Embed('channelEmbed', {
+                        width: 847,
+                        height: 476,
+                        playsinline: true,
+                        layout: 'video',
+                        channel: response.data.slug,
+                        theme: 'dark',
+                    })
+                })
+                .catch(() => {
+                    this.featuredChannel = {
+                        id: 0,
+                        name: 'Twitch',
+                        url: 'twitch',
+                        viewers: 0,
+                    }
+                })
         },
-        handleFollowship() {
+        handleFollowship: function () {
             // TODO: Add Twitch logic
         },
     },
     watch: {
-        id: function (newId) {
-            // TODO: Add Twitch logic for checking follow status
-        },
         url: function (newUrl) {
             window.twitch.setChannel(newUrl)
         },

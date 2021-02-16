@@ -8,7 +8,14 @@ import { BootstrapVue } from 'bootstrap-vue'
 import moment from 'moment'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faComments, faEye, faHeart, faHeartBroken } from '@fortawesome/free-solid-svg-icons'
+import {
+    faComments,
+    faEye,
+    faHeart,
+    faHeartBroken,
+    faMoon,
+    faSun,
+} from '@fortawesome/free-solid-svg-icons'
 import {
     faDiscord,
     faFacebookF,
@@ -21,11 +28,13 @@ import {
     faTwitter,
     faYoutube,
 } from '@fortawesome/free-brands-svg-icons'
+import { faBadgeCheck } from '@fortawesome/pro-solid-svg-icons'
 import store from '@/Store'
 require('@/bootstrap')
 import '../sass/app.scss'
 
 library.add(
+    faBadgeCheck,
     faComments,
     faDiscord,
     faEye,
@@ -37,6 +46,8 @@ library.add(
     faInstagram,
     faLinkedinIn,
     faMicrosoft,
+    faMoon,
+    faSun,
     faTwitch,
     faTwitter,
     faYoutube,
@@ -55,6 +66,11 @@ Vue.mixin({
         getFormatedDate(date, format = 'DD/MM/YYYY hh:mm:ss') {
             return moment(date).format(format)
         },
+        formatNumber: (num) => {
+            return parseInt(num)
+                .toString()
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        },
         route: (name, params, absolute) => route(name, params, absolute, Ziggy),
     },
 })
@@ -67,6 +83,21 @@ new Vue({
     store,
     metaInfo: {
         titleTemplate: (title) => (title ? `${title} | Creative Streams` : 'Creative Streams'),
+        link: [{ rel: 'canonical', href: 'https://www.creativestreams.tv' }],
+        meta: [
+            {
+                property: 'og:title',
+                content: 'Creative Streams',
+            },
+            {
+                name: 'twitter:title',
+                content: 'Creative Streams',
+            },
+            {
+                property: 'og:url',
+                content: 'https://www.creativestreams.tv',
+            },
+        ],
     },
     render: (h) =>
         h(App, {

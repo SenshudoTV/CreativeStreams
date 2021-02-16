@@ -17,4 +17,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'guest', 'throttle:10,1'])->prefix('channels')->name('channels.')->group(function () {
     Route::get('/', [ChannelsController::class, 'index'])->name('list');
+    Route::get('/random', [ChannelsController::class, 'random'])->name('random');
 });
