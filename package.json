@@ -88,6 +88,7 @@
         "moment": "^2.29.1",
         "nuxt": "^2.14.12",
         "portal-vue": "^2.1.7",
-        "uniqid": "^5.2.0"
+        "uniqid": "^5.2.0",
+        "vue-multiselect": "^2.1.6"
     }
 }

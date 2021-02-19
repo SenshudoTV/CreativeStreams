@@ -1,5 +1,5 @@
 <template>
-    <b-navbar toggleable="lg" fixed="top">
+    <b-navbar toggleable="lg" fixed="top" id="navbar">
         <b-container>
             <b-navbar-brand href="/">
                 <img
@@ -68,16 +68,27 @@ export default {
     },
     mounted() {
         this.toggleTheme(true)
+
+        window.addEventListener('scroll', function () {
+            if (document.documentElement.scrollTop > 90) {
+                document.getElementById('navbar').classList.add('isSolid')
+            } else {
+                document.getElementById('navbar').classList.remove('isSolid')
+            }
+        })
+    },
+    beforeDestroy() {
+        window.removeEventListener('scroll')
     },
     methods: {
-        authorize() {
+        authorize: function () {
             if (!this.$store.getters.isAuthorized) {
                 this.$store.dispatch(AUTH_LOGIN)
             } else {
                 this.$store.dispatch(USER_UPDATE)
             }
         },
-        toggleTheme(initialSetup = false) {
+        toggleTheme: function (initialSetup = false) {
             if (initialSetup) {
                 const themeStored = localStorage.getItem('app-theme')
 

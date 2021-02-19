@@ -5,6 +5,7 @@ import { InertiaProgress } from '@inertiajs/progress'
 import Vue from 'vue'
 import VueMeta from 'vue-meta'
 import { BootstrapVue } from 'bootstrap-vue'
+import Multiselect from 'vue-multiselect'
 import moment from 'moment'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -15,6 +16,7 @@ import {
     faHeart,
     faHeartBroken,
     faMoon,
+    faSearch,
     faSun,
 } from '@fortawesome/free-solid-svg-icons'
 import {
@@ -49,6 +51,7 @@ library.add(
     faLinkedinIn,
     faMicrosoft,
     faMoon,
+    faSearch,
     faSun,
     faTwitch,
     faTwitter,
@@ -60,6 +63,7 @@ Vue.use(plugin)
 Vue.use(BootstrapVue)
 Vue.use(VueMeta)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component('multiselect', Multiselect)
 
 Vue.prototype.moment = moment
 

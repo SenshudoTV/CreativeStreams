@@ -13,9 +13,27 @@
                     </b-button>
                 </b-col>
             </b-row>
-            <b-row class="mb-4" id="filterContainer" v-if="filters">
-                <b-col :sm="12" :md="6" :lg="6"></b-col>
-                <b-col :sm="12" :md="6" :lg="6"></b-col>
+            <b-row class="mb-4" id="filterContainer" v-if="displayFilters">
+                <b-col :sm="12" :md="6" :lg="8" class="pl-0">
+                    <multiselect
+                        v-model="filters.filter"
+                        :options="options.filters"
+                        :searchable="true"
+                        :allow-empty="true"
+                        :multiple="true"
+                        placeholder="Select A Category, Tag or Hashtag..."
+                        label="tag"
+                        track-by="id"
+                    />
+                </b-col>
+                <b-col :sm="12" :md="4" :lg="3" class="px-0">
+                    <b-select v-model="filters.order" :options="options.order" />
+                </b-col>
+                <b-col :sm="12" :md="2" :lg="1" class="pr-0">
+                    <b-button block variant="primary" @click="applyFilters">
+                        <font-awesome-icon :icon="['fas', 'search']" />
+                    </b-button>
+                </b-col>
             </b-row>
             <b-row>
                 <b-col v-if="loading" class="loading text-center">
@@ -94,7 +112,21 @@ export default {
         return {
             loading: true,
             error: false,
-            filters: false,
+            displayFilters: false,
+            filters: {
+                filter: null,
+                order: 'random',
+            },
+            options: {
+                filters: [],
+                order: [
+                    { value: 'random', text: 'Random' },
+                    { value: 'viewers-desc', text: 'Viewers (High to Low)' },
+                    { value: 'viewers-asc', text: 'Viewers (Low to High)' },
+                    { value: 'created-desc', text: 'Broadcast Time (Longest)' },
+                    { value: 'created-asc', text: 'Broadcast Time (Recently Started)' },
+                ],
+            },
             total: 0,
             selected: undefined,
             channels: [],
@@ -103,6 +135,7 @@ export default {
     },
     mounted() {
         this.fetchChannels()
+        this.fetchFilters()
     },
     methods: {
         handleClick: function (channel) {
@@ -110,7 +143,7 @@ export default {
                 this.selected = channel
             }
         },
-        fetchChannels: function (link = null) {
+        fetchChannels: function (link = null, filters = null) {
             let page = 1
 
             if (link !== null) {
@@ -133,9 +166,18 @@ export default {
                     this.loading = false
                 })
         },
-        toggleFilters: function () {
-            this.filters = !this.filters
+        fetchFilters: function () {
+            window.axios
+                .get(this.route('tags.list'))
+                .then((response) => {
+                    this.options.filters = response.data.data
+                })
+                .catch(() => {})
         },
+        toggleFilters: function () {
+            this.displayFilters = !this.displayFilters
+        },
+        applyFilters: function () {},
     },
 }
 </script>

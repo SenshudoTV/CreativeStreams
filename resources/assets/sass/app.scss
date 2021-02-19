@@ -2,8 +2,10 @@ $purple: rgb(100, 65, 164);
 $primary: $purple;
 
 @import '~bootstrap/scss/bootstrap.scss';
+@import '~vue-multiselect/dist/vue-multiselect.min.css';
 @import 'mixins';
 @import 'fonts';
+@import 'multiselect';
 
 *,
 *::before,
@@ -17,9 +19,18 @@ html {
     scroll-behavior: smooth;
 }
 
+.h-100-min {
+    min-height: 100%;
+}
+
 #app {
     min-height: 100%;
     display: flex;
+}
+
+.isSolid {
+    background-color: $primary;
+    border-bottom: 1px solid darken($primary, 7.5%);
 }
 
 .featured {
@@ -293,53 +304,83 @@ html {
     }
 }
 
-.AppFooter {
+.social--icons {
+    list-style: outside none none;
+    display: block;
+    padding: 0;
+    margin: 0;
+    max-width: 210px;
+
+    & > li {
+        display: inline-block;
+        margin-right: 5px;
+        margin-bottom: 5px;
+
+        & > a {
+            display: block;
+            background-color: rgb(255, 255, 255);
+            padding: 10px 0;
+            text-align: center;
+            width: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            border-radius: $border-radius;
+            color: $purple;
+
+            &:hover,
+            &:focus {
+                background-color: darken(rgb(255, 255, 255), 7.5%);
+            }
+        }
+    }
+}
+
+.app--footer {
     padding-top: 7rem;
     -webkit-clip-path: polygon(100% 27%, 100% 100%, 0 100%, 0 27%, 50% 0);
     clip-path: polygon(100% 27%, 100% 100%, 0 100%, 0 27%, 50% 0);
     background-color: $purple;
     margin-bottom: 0;
-    margin-top: 3rem;
+    padding: 4rem 0 0 0;
+
+    .app--footer__links {
+        list-style: outside none none;
+        display: block;
+        padding: 0;
+        margin: 0;
+
+        & > li {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0 0 0;
+
+            & > a {
+                text-decoration: none;
+                color: rgba(255, 255, 255, 0.75);
+
+                &:hover,
+                &:focus {
+                    color: rgb(255, 255, 255);
+                }
+            }
+        }
+    }
 
     h4 {
-        margin-top: 0;
-        padding: 5px 0;
-        color: #fff;
-        text-align: center;
-        margin-bottom: 1rem;
-        border: 0;
-        text-transform: uppercase;
-    }
-
-    a {
-        display: block;
-        padding: 5px 10px;
-        border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
-        color: rgba(255, 255, 255, 0.5);
-
-        &:hover,
-        &:focus {
-            color: rgb(255, 255, 255);
-        }
-
-        &:last-child {
-            border-bottom: none;
+        &::after {
+            display: block;
+            content: '';
+            border-radius: $border-radius;
+            height: 4px;
+            background-color: rgb(248, 247, 231);
+            width: 25%;
+            margin-top: 0.25rem;
         }
     }
 
-    .addthis_horizontal_follow_toolbox {
-        width: 170px;
-        margin: 0 auto;
-
-        a {
-            border-bottom: none;
-        }
-    }
-
-    .row {
-        &:last-child {
-            padding: 2rem 0;
-        }
+    .app--footer__copyright {
+        padding: 1rem 0 0 0;
+        margin-top: 3rem;
+        border-top: 2px solid rgb(248, 247, 231);
     }
 }
 
