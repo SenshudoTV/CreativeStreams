@@ -27,7 +27,8 @@ class TagsFactory extends Factory
             'tag'           => $this->faker->citySuffix,
             'tag_id'        => $this->faker->uuid,
             'is_tag'        => $tag,
-            'is_hashtag'    => !$tag,
+            'is_hashtag'    => ! $tag,
+            'is_category'   => false,
         ];
     }
 }

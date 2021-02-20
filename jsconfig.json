@@ -12,7 +12,7 @@
     },
     "exclude": [
         "node_modules",
-        "public",
+        "public_html",
         "vendor",
         "resources/assets/js/ziggy.js"
     ]

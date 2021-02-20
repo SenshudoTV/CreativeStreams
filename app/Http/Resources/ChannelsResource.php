@@ -53,15 +53,35 @@ class ChannelsResource extends JsonResource
             preg_match_all("/(?<=^|\P{L})(#\b\p{L}[\p{L}\d_]+)/u", $title, $matches);
 
             if (! empty($matches)) {
-                foreach ($matches[0] as $hash) {
-                    $tags[] = new TagsResource(Tags::where('tag_safe', Str::slug($hash))->first());
+                $hashs = $matches[0];
+
+                if (! empty($hashs)) {
+                    $tagResource = Tags::where(function ($query) use ($hashs) {
+                        foreach ($hashs as $hash) {
+                            $query->orWhere('tag_safe', Str::slug($hash));
+                        }
+                    })->get();
+
+                    if ($tagResource !== null) {
+                        foreach ($tagResource as $tag) {
+                            $tags[] = new TagsResource($tag);
+                        }
+                    }
                 }
             }
         }
 
         if (! empty($tagArr)) {
-            foreach ($tagArr as $tag) {
-                $tags[] = new TagsResource(Tags::where('tag_id', $tag)->first());
+            $tagResource = Tags::where(function ($query) use ($tagArr) {
+                foreach ($tagArr as $tag) {
+                    $query->orWhere('tag_id', $tag);
+                }
+            })->get();
+
+            if ($tagResource !== null) {
+                foreach ($tagResource as $tag) {
+                    $tags[] = new TagsResource($tag);
+                }
             }
         }
 

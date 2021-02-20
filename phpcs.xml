@@ -6,9 +6,7 @@
 
     <rule ref="PSR2" />
 
-    <rule ref="PSR2.Namespaces.NamespaceDeclaration">
-        <exclude-pattern>/database/migrations/*.php</exclude-pattern>
-    </rule>
+    <rule ref="PSR2.Namespaces.NamespaceDeclaration" />
 
     <rule ref="Generic.Files.LineEndings">
         <properties>
@@ -73,4 +71,15 @@
     <rule ref="Squiz.ControlStructures.LowercaseDeclaration" />
 
     <rule ref="Generic.ControlStructures.InlineControlStructure" />
+
+    <exclude-pattern>./bootstrap/*</exclude-pattern>
+    <exclude-pattern>./charts/*</exclude-pattern>
+    <exclude-pattern>./database/migrations/*</exclude-pattern>
+    <exclude-pattern>./node_modules/*</exclude-pattern>
+    <exclude-pattern>./public_html/index.php</exclude-pattern>
+    <exclude-pattern>./resources/*</exclude-pattern>
+    <exclude-pattern>./storage/*</exclude-pattern>
+    <exclude-pattern>./_ide_helper.php</exclude-pattern>
+    <exclude-pattern>./.phpstorm.meta.php</exclude-pattern>
+
 </ruleset>

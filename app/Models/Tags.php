@@ -21,6 +21,7 @@ class Tags extends Model
         'tag_safe',
         'is_tag',
         'is_hashtag',
+        'is_category',
         'count',
     ];
 
@@ -39,6 +40,7 @@ class Tags extends Model
     protected $casts = [
         'is_tag'        => 'boolean',
         'is_hashtag'    => 'boolean',
+        'is_category'   => 'boolean',
         'count'         => 'integer',
     ];
 

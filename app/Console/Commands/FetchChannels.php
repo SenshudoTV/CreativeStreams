@@ -16,7 +16,7 @@ class FetchChannels extends Command
      *
      * @var string
      */
-    protected $signature = 'channels:fetch';
+    protected $signature = 'twitch:fetch';
 
     /**
      * The console command description.
@@ -194,7 +194,7 @@ class FetchChannels extends Command
             'base_uri'  => 'https://api.twitch.tv/helix/',
             'headers'   => [
                 'Client-ID' => config('app.twitch.id'),
-                'Authorization' => 'Bearer ' . config('app.twitch.token'),
+                'Authorization' => 'Bearer ' . env('TWITCH_TOKEN'),
             ],
         ]);
     }
@@ -226,7 +226,6 @@ class FetchChannels extends Command
             $cursor = '&after=' . $cursor;
         }
 
-        // Reference
         $catIDs = [
             'Art' => 509660,
             'Beauty & Body Art' => 509661,
@@ -424,7 +423,7 @@ class FetchChannels extends Command
                 foreach ($matches[0] as $hash) {
                     $hashtag = str_replace('#', '', strtolower($hash));
 
-                    if (in_array($hashtag, $this->blacklist) !== true) {
+                    if (! empty($hashtag) && ! in_array($hashtag, $this->blacklist)) {
                         if (! in_array($hashtag, array_column($this->tags, 'tag'))) {
                             $this->tags[] = [
                                 'tag'           => $hashtag,

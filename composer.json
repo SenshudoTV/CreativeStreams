@@ -29,7 +29,6 @@
         "nunomaduro/collision": "^5.1.0",
         "phpro/grumphp": "^1.2.0",
         "phpunit/phpunit": "^9.3.3",
-        "sensiolabs/security-checker": "^6.0.3",
         "squizlabs/php_codesniffer": "^3.5.8"
     },
     "config": {

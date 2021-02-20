@@ -102,8 +102,8 @@ data:
         ServerAlias www.creativestreams.test
         ServerAdmin info@senshudo.tv
 
-        DocumentRoot /var/www/creativestreams.test/public
-        <Directory /var/www/creativestreams.test/public>
+        DocumentRoot /var/www/creativestreams.test/public_html
+        <Directory /var/www/creativestreams.test/public_html>
             DirectoryIndex index.php
             Options Indexes FollowSymLinks
             AllowOverride All

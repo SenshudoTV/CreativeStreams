@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:experimental
 
-FROM composer:2.0.8 as build
+FROM composer:2.0.9 as build
 
-FROM php:8.0.1-apache as base
+FROM php:8.0.2-apache as base
 ARG SSH_KEY
 
 RUN apt-get update && apt-get install -y \

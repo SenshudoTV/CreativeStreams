@@ -20,6 +20,7 @@ class CreateTags extends Migration
             $table->string('tag_safe')->unique();
             $table->boolean('is_tag')->default(true);
             $table->boolean('is_hashtag')->default(false);
+            $table->boolean('is_category')->default(false);
             $table->bigInteger('count')->default(0);
             $table->timestamps();
         });

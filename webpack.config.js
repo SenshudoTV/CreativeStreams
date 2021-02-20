@@ -16,7 +16,7 @@ module.exports = {
     },
     output: {
         crossOriginLoading: 'anonymous',
-        path: path.resolve(__dirname, 'public'),
+        path: path.resolve(__dirname, 'public_html'),
         filename: 'js/[name].[hash:8].js',
         chunkFilename: 'js/[name].[hash:8].js',
     },
@@ -31,10 +31,10 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin({
             cleanOnceBeforeBuildPatterns: [
-                path.resolve(__dirname, 'public/css'),
-                path.resolve(__dirname, 'public/js'),
-                path.resolve(__dirname, 'public/fonts'),
-                path.resolve(__dirname, 'public/images'),
+                path.resolve(__dirname, 'public_html/css'),
+                path.resolve(__dirname, 'public_html/js'),
+                path.resolve(__dirname, 'public_html/fonts'),
+                path.resolve(__dirname, 'public_html/images'),
             ],
         }),
         new VueLoaderPlugin(),
