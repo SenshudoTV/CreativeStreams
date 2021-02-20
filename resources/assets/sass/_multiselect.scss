@@ -226,7 +226,21 @@
                 display: none;
             }
 
-            & > .multiselect__element {
+            & > li:not(.multiselect__element) {
+                & > span.multiselect__option {
+                    display: block;
+                    padding: 12px;
+                    min-height: 40px;
+                    line-height: 16px;
+                    text-decoration: none;
+                    text-transform: none;
+                    background-color: $red;
+                    color: #fff;
+                    font-weight: 700;
+                }
+            }
+
+            & > li.multiselect__element {
                 display: block;
 
                 & > .multiselect__option {

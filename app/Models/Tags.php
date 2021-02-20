@@ -46,4 +46,9 @@ class Tags extends Model
     {
         return TagsFactory::new();
     }
+
+    public static function resetCount()
+    {
+        self::where('count', '>', '0')->update(['count' => 0]);
+    }
 }

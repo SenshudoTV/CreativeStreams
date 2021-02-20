@@ -207,6 +207,7 @@ class FetchChannels extends Command
     public function handle()
     {
         Channels::setAllOffline();
+        Tags::resetCount();
 
         $this->fetchStreams();
 
@@ -274,8 +275,10 @@ class FetchChannels extends Command
 
                     $this->populateHashtags($stream->title);
 
+                    $tagsEmpty = (empty($stream->tag_ids) && $stream->tag_ids === null);
+
                     $this->populateTags(
-                        (! empty($stream->tag_ids) && $stream->tag_ids !== null ? $stream->tag_ids : [])
+                        ! $tagsEmpty ? $stream->tag_ids : []
                     );
 
                     Channels::updateOrCreate([
@@ -297,7 +300,7 @@ class FetchChannels extends Command
                         'views'                 => $user['views'],
                         'viewers'               => $stream->viewer_count,
                         'partner'               => $user['partner'],
-                        'tags'                  => json_encode($stream->tag_ids),
+                        'tags'                  => ! $tagsEmpty ? json_encode($stream->tag_ids) : null,
                     ]);
                 }
 

@@ -26,7 +26,7 @@ class CreateChannels extends Migration
             $table->bigInteger('views')->default(0);
             $table->bigInteger('viewers')->default(0);
             $table->boolean('partner')->default(false);
-            $table->text('tags')->nullable();
+            $table->json('tags')->nullable();
             $table->timestamps();
         });
     }

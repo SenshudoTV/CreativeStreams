@@ -59,6 +59,13 @@ class Channels extends Model
 
     public static function setAllOffline()
     {
-        // TODO: Update All Offline
+        self::where('live', true)->update([
+            'live'              => false,
+            'title'             => null,
+            'stream_created'    => null,
+            'game_id'           => 0,
+            'viewers'           => 0,
+            'tags'              => null,
+        ]);
     }
 }

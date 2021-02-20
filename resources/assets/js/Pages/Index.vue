@@ -13,7 +13,7 @@
                     </b-button>
                 </b-col>
             </b-row>
-            <b-row class="mb-4" id="filterContainer" v-if="displayFilters">
+            <b-row class="mb-2" id="filterContainer" v-if="displayFilters">
                 <b-col :sm="12" :md="6" :lg="8" class="pl-0">
                     <multiselect
                         v-model="filters.filter"
@@ -30,7 +30,7 @@
                     <b-select v-model="filters.order" :options="options.order" />
                 </b-col>
                 <b-col :sm="12" :md="2" :lg="1" class="pr-0">
-                    <b-button block variant="primary" @click="applyFilters">
+                    <b-button block variant="primary" @click="fetchChannels()">
                         <font-awesome-icon :icon="['fas', 'search']" />
                     </b-button>
                 </b-col>
@@ -51,7 +51,7 @@
                 </b-col>
                 <b-col v-else-if="error">
                     <b-alert variant="danger" class="text-center flex-fill" show>
-                        Failed to fetch streams.
+                        {{ errorMessage }}
                     </b-alert>
                 </b-col>
                 <template v-else>
@@ -112,15 +112,15 @@ export default {
         return {
             loading: true,
             error: false,
+            errorMessage: 'Failed to fetch streams.',
             displayFilters: false,
             filters: {
-                filter: null,
-                order: 'random',
+                filter: [],
+                order: 'created-asc',
             },
             options: {
                 filters: [],
                 order: [
-                    { value: 'random', text: 'Random' },
                     { value: 'viewers-desc', text: 'Viewers (High to Low)' },
                     { value: 'viewers-asc', text: 'Viewers (Low to High)' },
                     { value: 'created-desc', text: 'Broadcast Time (Longest)' },
@@ -143,8 +143,12 @@ export default {
                 this.selected = channel
             }
         },
-        fetchChannels: function (link = null, filters = null) {
-            let page = 1
+        fetchChannels: function (link = null) {
+            this.loading = true
+
+            let page = 1,
+                tags = null,
+                hashs = null
 
             if (link !== null) {
                 const url = new URL(link)
@@ -152,17 +156,59 @@ export default {
                 page = parseInt(url.searchParams.get('page'))
             }
 
+            this.filters.filter.forEach((element) => {
+                if (element.is_tag === false) {
+                    if (hashs === null) {
+                        hashs = element.tag.replace('#', '') + ','
+                    } else {
+                        hashs += element.tag.replace('#', '') + ','
+                    }
+                } else {
+                    if (tags === null) {
+                        tags = element.id + ','
+                    } else {
+                        tags += element.id + ','
+                    }
+                }
+            })
+
+            if (tags !== null) {
+                tags = tags.replace(/,\s*$/, '')
+            }
+
+            if (hashs !== null) {
+                hashs = hashs.replace(/,\s*$/, '')
+            }
+
             window.axios
-                .get(this.route('channels.list', { page: page }))
+                .get(
+                    this.route('channels.list', {
+                        page: page,
+                        'filter[tag]': tags,
+                        'filter[hashtag]': hashs,
+                        order: this.filters.order,
+                    }),
+                )
                 .then((response) => {
                     this.loading = false
                     this.error = false
                     this.channels = response.data.data
                     this.meta = response.data.meta
                     this.total = response.data.meta.total
+
+                    if (this.total === 0) {
+                        this.error = true
+                        this.errorMessage =
+                            this.filters.filter.length > 0
+                                ? // eslint-disable-next-line quotes
+                                  "Well this is awkward, we can't seem to find any streams that match your search filters"
+                                : // eslint-disable-next-line quotes
+                                  "Well this is awkward, we can't seem to find any streams that are currently live."
+                    }
                 })
                 .catch(() => {
                     this.error = true
+                    this.errorMessage = 'Failed to fetch streams.'
                     this.loading = false
                 })
         },
@@ -177,7 +223,6 @@ export default {
         toggleFilters: function () {
             this.displayFilters = !this.displayFilters
         },
-        applyFilters: function () {},
     },
 }
 </script>
