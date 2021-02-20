@@ -19,41 +19,43 @@ class ChannelsController extends Controller
     {
         $query = Channels::where('live', true);
 
-        if ($request->has('filter')) {
-            $filters = $request->get('filter');
+        $query->where(function ($query) use ($request) {
+            if ($request->has('filter')) {
+                $filters = $request->get('filter');
 
-            if (array_key_exists('tag', $filters)) {
-                $tags = explode(',', $filters['tag']);
+                if (array_key_exists('tag', $filters)) {
+                    $tags = explode(',', $filters['tag']);
 
-                if (! empty($tags)) {
-                    $query->where(function ($query) use ($tags) {
-                        if (is_array($tags)) {
-                            foreach ($tags as $tag) {
-                                $query->orWhere('tags', 'LIKE', "%$tag%");
+                    if (! empty($tags)) {
+                        $query->orWhere(function ($query) use ($tags) {
+                            if (is_array($tags)) {
+                                foreach ($tags as $tag) {
+                                    $query->orWhere('tags', 'LIKE', "%$tag%");
+                                }
+                            } else {
+                                $query->orWhere('tags', 'LIKE', "%$tags%");
                             }
-                        } else {
-                            $query->orWhere('tags', 'LIKE', "%$tags%");
-                        }
-                    });
+                        });
+                    }
+                }
+
+                if (array_key_exists('hashtag', $filters)) {
+                    $hashs = explode(',', $filters['hashtag']);
+
+                    if (! empty($hashs)) {
+                        $query->orWhere(function ($query) use ($hashs) {
+                            if (is_array($hashs)) {
+                                foreach ($hashs as $hash) {
+                                    $query->orWhere('title', 'LIKE', "%#$hash%");
+                                }
+                            } else {
+                                $query->orWhere('title', 'LIKE', "%#$hashs%");
+                            }
+                        });
+                    }
                 }
             }
-
-            if (array_key_exists('hashtag', $filters)) {
-                $hashs = explode(',', $filters['hash']);
-
-                if (! empty($hashs)) {
-                    $query->where(function ($query) use ($hashs) {
-                        if (is_array($hashs)) {
-                            foreach ($hashs as $hash) {
-                                $query->orWhere('title', 'LIKE', "%#$hash%");
-                            }
-                        } else {
-                            $query->orWhere('title', 'LIKE', "%#$hashs%");
-                        }
-                    });
-                }
-            }
-        }
+        });
 
         if ($request->has('order')) {
             $order = $request->get('order');
