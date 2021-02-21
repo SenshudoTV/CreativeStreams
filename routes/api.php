@@ -16,11 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['api', 'guest', 'throttle:10,1'])->prefix('channels')->name('channels.')->group(function () {
+Route::middleware(['api', 'guest', 'throttle:20,1'])->prefix('channels')->name('channels.')->group(function () {
     Route::get('/', [ChannelsController::class, 'index'])->name('list');
     Route::get('/random', [ChannelsController::class, 'random'])->name('random');
 });
 
-Route::middleware(['api', 'guest', 'throttle:10,1'])->prefix('tags')->name('tags.')->group(function () {
+Route::middleware(['api', 'guest', 'throttle:20,1'])->prefix('tags')->name('tags.')->group(function () {
     Route::get('/', [TagsController::class, 'index'])->name('list');
 });

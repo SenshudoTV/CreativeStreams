@@ -25,9 +25,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('channels:fetch')
+        $schedule->command('twitch:validate')
+            ->description('Validate Twitch OAuth Token')
+            ->daily();
+
+        $schedule->command('twitch:fetch')
             ->description('Fetch Live Channels')
-            ->everyFifteenMinutes();
+            ->everyThirtyMinutes();
     }
 
     /**

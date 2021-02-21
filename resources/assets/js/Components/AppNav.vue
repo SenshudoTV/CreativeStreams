@@ -69,6 +69,10 @@ export default {
     mounted() {
         this.toggleTheme(true)
 
+        if (document.documentElement.scrollTop > 90) {
+            document.getElementById('navbar').classList.add('isSolid')
+        }
+
         window.addEventListener('scroll', function () {
             if (document.documentElement.scrollTop > 90) {
                 document.getElementById('navbar').classList.add('isSolid')

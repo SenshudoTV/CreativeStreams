@@ -154,6 +154,8 @@ export default {
                 const url = new URL(link)
 
                 page = parseInt(url.searchParams.get('page'))
+
+                document.getElementById('streamHeading').scrollIntoView()
             }
 
             this.filters.filter.forEach((element) => {
