@@ -122,7 +122,7 @@ export default {
                         height: 476,
                         playsinline: true,
                         layout: 'video',
-                        channel: this.featuredChannel.id,
+                        channel: this.featuredChannel.slug,
                         theme: 'dark',
                         parent: ['www.creativestreams.tv', 'development.creativetsreams.tv'],
                     })
@@ -137,7 +137,7 @@ export default {
             if (newChannel !== undefined && newChannel !== null) {
                 this.featuredChannel = newChannel
 
-                this.EmbedAPi.setChannel(newChannel.id)
+                this.EmbedAPi.setChannel(newChannel.slug)
             }
         },
     },

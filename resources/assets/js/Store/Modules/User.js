@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { USER_UPDATE, USER_LOGOUT } from '@/Store/Actions/User'
 import { AUTH_SUCCESS, AUTH_EXPIRED, AUTH_LOGOUT } from '@/Store/Actions/Authentication'
 
@@ -26,7 +27,10 @@ export default {
             if (userData !== undefined && userData !== null && userData !== '') {
                 userData = JSON.parse(userData)
 
-                if (moment(userData.expires).toDate() > moment().toDate()) {
+                if (
+                    Vue.prototype.moment(userData.expires).toDate() >
+                    Vue.prototype.moment().toDate()
+                ) {
                     window.twitchAPI.defaults.headers.common['Authorization'] =
                         'OAuth ' + userData.token
 
