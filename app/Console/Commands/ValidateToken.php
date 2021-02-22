@@ -37,12 +37,13 @@ class ValidateToken extends Command
     {
         parent::__construct();
 
+        $env = file_get_contents(base_path() . '/twitch.json');
+        $env = json_decode($env, true);
+
         $this->client = new GuzzleClient([
-            'base_uri'  => 'https://id.twitch.tv',
+            'base_uri'  => 'https://id.twitch.tv/oauth2/',
             'headers'   => [
-                'client_id'     => config('app.twitch.id'),
-                'client_secret' => config('app.twitch.secret'),
-                'grant_type'    => 'client_credentials',
+                'Authorization' => 'Bearer ' . $env['twitch_token'],
             ],
         ]);
     }
@@ -54,15 +55,34 @@ class ValidateToken extends Command
      */
     public function handle()
     {
-        $response = $this->client->request('POST', '/oauth2/token');
+        $validateResponse = $this->client->request('GET', 'validate');
 
-        if ($response->getStatusCode() === 200) {
-            $responseBody = json_decode($response->getBody()->getContents());
+        if ($validateResponse->getStatusCode() === 200) {
+            $validateResponseBody = json_decode($validateResponse->getBody()->getContents());
 
-            if (! empty($responseBody) && ! empty($responseBody->access_token)) {
-                $this->updateEnv([
-                    'TWITCH_TOKEN' => $responseBody->access_token,
-                ]);
+            if (! empty($validateResponseBody) && ! empty($validateResponseBody->expires_in)) {
+                if ($validateResponseBody->expires_in <= 86400) {
+                    $tokenResponse = $this->client->post('token', [
+                        'form_params' => [
+                            'client_id'     => config('app.twitch.id'),
+                            'client_secret' => config('app.twitch.secret'),
+                            'grant_type'    => 'client_credentials',
+                        ],
+                        'headers' => [
+                            'Content-Type' => 'application/x-www-form-urlencoded',
+                        ],
+                    ]);
+
+                    if ($tokenResponse->getStatusCode() === 200) {
+                        $tokenResponseBody = json_decode($tokenResponse->getBody()->getContents());
+
+                        if (! empty($tokenResponseBody) && ! empty($tokenResponseBody->access_token)) {
+                            $this->updateEnv([
+                                'twitch_token' => $tokenResponseBody->access_token,
+                            ]);
+                        }
+                    }
+                }
             }
         }
 
@@ -78,24 +98,20 @@ class ValidateToken extends Command
     protected function updateEnv($data = []): bool
     {
         if (! empty($data)) {
-            $env = file_get_contents(base_path() . '/.env');
-            $env = preg_split('/\s+/', $env);
+            $env = file_get_contents(base_path() . '/twitch.json');
+            $env = json_decode($env, true);
 
             foreach ($data as $key => $value) {
                 foreach ($env as $env_key => $env_value) {
-                    $entry = explode('=', $env_value, 2);
-
-                    if ($entry[0] == $key) {
-                        $env[$env_key] = $key . '=' . $value;
+                    if ($env_key === $key) {
+                        $env[$env_key] = $value;
                     } else {
                         $env[$env_key] = $env_value;
                     }
                 }
             }
 
-            $env = implode("\n", $env);
-
-            file_put_contents(base_path() . '/.env', $env);
+            file_put_contents(base_path() . '/twitch.json', json_encode($env));
 
             return true;
         } else {

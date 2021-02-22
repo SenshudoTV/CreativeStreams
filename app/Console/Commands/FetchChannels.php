@@ -190,11 +190,14 @@ class FetchChannels extends Command
     {
         parent::__construct();
 
+        $env = file_get_contents(base_path() . '/twitch.json');
+        $env = json_decode($env, true);
+
         $this->client = new GuzzleClient([
             'base_uri'  => 'https://api.twitch.tv/helix/',
             'headers'   => [
                 'Client-ID' => config('app.twitch.id'),
-                'Authorization' => 'Bearer ' . env('TWITCH_TOKEN'),
+                'Authorization' => 'Bearer ' . $env['twitch_token'],
             ],
         ]);
     }
