@@ -141,6 +141,8 @@ export default {
         handleClick: function (channel) {
             if (channel !== undefined && channel !== null) {
                 this.selected = channel
+
+                document.getElementById('channelEmbed').scrollIntoView()
             }
         },
         fetchChannels: function (link = null) {
