@@ -16,7 +16,7 @@
         <script src="{{ mix('/js/app.js') }}" defer type="text/javascript"></script>
     </head>
 
-    <body class="h-100-min app-light">
+    <body class="app-light">
         @inertia
     </body>
 </html>
