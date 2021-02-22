@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.image.repository }}-deployment"
+  labels:
+    app: "{{ .Values.image.repository }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: "{{ .Values.image.repository }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.image.repository }}"
+    spec:
+      volumes:
+        - name: local-mount
+          hostPath:
+            path: "{{ .Values.projectPath }}"
+        - name: apache-config-volume
+          configMap:
+            name: {{ .Values.image.repository }}-apache-config
+      containers:
+        - name: app
+          image: "creativestreams:latest"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          volumeMounts:
+            - name: local-mount
+              mountPath: /var/www/creativestreams.test
+            - name: apache-config-volume
+              mountPath: /etc/apache2/apache2.conf
+              subPath: apache2.conf
