@@ -2,14 +2,10 @@
 
 namespace App\Models;
 
-use Database\Factories\ChannelsFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Channels extends Model
 {
-    use HasFactory;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -51,11 +47,6 @@ class Channels extends Model
         'partner'       => 'boolean',
         'tags'          => 'array',
     ];
-
-    protected static function newFactory()
-    {
-        return ChannelsFactory::new();
-    }
 
     public static function setAllOffline()
     {

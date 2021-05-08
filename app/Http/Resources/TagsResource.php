@@ -9,14 +9,15 @@ class TagsResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
     public function toArray($request)
     {
         return [
-            'id'            => (! empty($this->tag_id)) ? $this->tag_id : $this->id,
-            'tag'           => (($this->is_hashtag && empty($this->tag_id)) ? '#' : '') . $this->tag,
+            'id'            => $this->id,
+            'tag'           => ($this->is_hashtag && (! $this->is_tag && ! $this->is_category) ? '#' : '') . $this->tag,
             'is_tag'        => $this->is_tag,
             'is_hashtag'    => $this->is_hashtag,
             'is_category'   => $this->is_category,

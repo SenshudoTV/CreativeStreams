@@ -2,14 +2,10 @@
 
 namespace App\Models;
 
-use Database\Factories\TagsFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Tags extends Model
 {
-    use HasFactory;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -22,6 +18,7 @@ class Tags extends Model
         'is_tag',
         'is_hashtag',
         'is_category',
+        'is_blacklisted',
         'count',
     ];
 
@@ -41,13 +38,9 @@ class Tags extends Model
         'is_tag'        => 'boolean',
         'is_hashtag'    => 'boolean',
         'is_category'   => 'boolean',
+        'is_blacklisted'=> 'boolean',
         'count'         => 'integer',
     ];
-
-    protected static function newFactory()
-    {
-        return TagsFactory::new();
-    }
 
     public static function resetCount()
     {

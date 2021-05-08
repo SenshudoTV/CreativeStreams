@@ -1,13 +1,15 @@
 {
     "private": true,
-    "browserslist": "> 0.5%, last 2 versions, Firefox ESR, not dead",
+    "browserslist": "> 1%, last 2 versions, Firefox ESR, not dead",
     "scripts": {
         "routes": "php artisan ziggy:generate resources/assets/js/ziggy.js",
         "dev": "npm run routes && npm run development",
-        "development": "cross-env NODE_ENV=development webpack --progress --hide-modules",
-        "watch": "cross-env NODE_ENV=development webpack --watch --info-verbosity verbose",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --watch-options-poll=1000",
+        "hot": "mix watch --hot",
         "prod": "npm run routes && npm run production",
-        "production": "cross-env NODE_ENV=production webpack --no-progress --hide-modules",
+        "production": "mix --production",
         "check-js": "prettier --check resources/assets/**/*.{scss,js,vue}",
         "fix-js": "prettier --write resources/assets/**/*.{scss,js,vue}"
     },
@@ -48,7 +50,7 @@
         "file-loader": "^6.2.0",
         "html-webpack-plugin": "^4.5.1",
         "jest": "^26.4.2",
-        "jquery": "^3.2",
+        "laravel-mix": "^6.0.16",
         "lodash": "^4.17.20",
         "mini-css-extract-plugin": "^1.3.4",
         "node-sass": "^5.0.0",
@@ -64,12 +66,7 @@
         "vue": "^2.6.12",
         "vue-loader": "^15.9.3",
         "vue-template-compiler": "^2.6.12",
-        "vuex": "^3.5.1",
-        "webpack": "^4.46.0",
-        "webpack-assets-manifest": "^4.0.1",
-        "webpack-cli": "^3.3.12",
-        "webpack-dev-server": "^3.11.2",
-        "webpack-notifier": "^1.12.0"
+        "vuex": "^3.5.1"
     },
     "dependencies": {
         "@fortawesome/fontawesome-pro": "^5.15.2",
@@ -79,8 +76,8 @@
         "@fortawesome/pro-regular-svg-icons": "^5.15.2",
         "@fortawesome/pro-solid-svg-icons": "^5.15.2",
         "@fortawesome/vue-fontawesome": "^2.0.2",
-        "@inertiajs/inertia": "^0.8.2",
-        "@inertiajs/inertia-vue": "^0.5.4",
+        "@inertiajs/inertia": "^0.8.6",
+        "@inertiajs/inertia-vue": "^0.5.6",
         "@inertiajs/progress": "^0.2.4",
         "bootstrap": "^4.5.3",
         "bootstrap-vue": "^2.21.2",

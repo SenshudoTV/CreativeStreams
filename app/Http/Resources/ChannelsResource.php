@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\TagsResource;
 use App\Models\Tags;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Str;
@@ -12,7 +11,8 @@ class ChannelsResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
     public function toArray($request)
