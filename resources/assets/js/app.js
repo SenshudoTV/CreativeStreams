@@ -89,21 +89,6 @@ new Vue({
     store,
     metaInfo: {
         titleTemplate: (title) => (title ? `${title} | Creative Streams` : 'Creative Streams'),
-        link: [{ rel: 'canonical', href: 'https://www.creativestreams.tv' }],
-        meta: [
-            {
-                property: 'og:title',
-                content: 'Creative Streams',
-            },
-            {
-                name: 'twitter:title',
-                content: 'Creative Streams',
-            },
-            {
-                property: 'og:url',
-                content: 'https://www.creativestreams.tv',
-            },
-        ],
     },
     render: (h) =>
         h(App, {

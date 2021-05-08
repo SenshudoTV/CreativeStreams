@@ -1,5 +1,10 @@
 <template>
-    <b-navbar toggleable="lg" fixed="top" id="navbar">
+    <b-navbar
+        toggleable="lg"
+        fixed="top"
+        id="navbar"
+        :type="theme.mode === 'light' ? 'dark' : 'light'"
+    >
         <b-container>
             <b-navbar-brand href="/">
                 <img
