@@ -19,6 +19,7 @@ class ChannelsResource extends JsonResource
     {
         $category = [
             26936   => 'Music & Performing Arts',
+            417752  => 'Talk Shows & Podcasts',
             488191  => 'Creative',
             509660  => 'Art',
             509661  => 'Beauty & Body Art',
