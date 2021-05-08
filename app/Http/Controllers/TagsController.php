@@ -14,6 +14,10 @@ class TagsController extends Controller
      */
     public function index()
     {
-        return new TagsCollectionResource(Tags::where('is_blacklisted', false)->orderBy('tag', 'ASC')->get());
+        return new TagsCollectionResource(
+            Tags::where('is_blacklisted', false)
+                ->where('count', '>', 0)
+                ->orderBy('tag', 'ASC')->get()
+        );
     }
 }

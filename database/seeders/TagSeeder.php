@@ -2144,5 +2144,40 @@ class TagSeeder extends Seeder
                     'tag_safe'        => $tag['tag_safe'],
                 ], Arr::except($tag, ['tag_safe']));
             });
+
+        $this->updateBlacklist();
+    }
+
+    public function updateBlacklist()
+    {
+        $tags = Tags::where('is_blacklisted', false)->get();
+
+        collect($tags)
+            ->each(function ($tag) {
+                $regexs = [
+                    '/^.*?monday.*$/mi',
+                    '/^.*?tuesday.*$/mi',
+                    '/^.*?wednesday.*$/mi',
+                    '/^.*?thursday.*$/mi',
+                    '/^.*?friday.*$/mi',
+                    '/^.*?saturday.*$/mi',
+                    '/^.*?sunday.*$/mi',
+                    '/^.*?road.*$/mi',
+                    '/^.*?team.*$/mi',
+                    '/^.*?wayto.*$/mi',
+                    '/^.*?dj.*$/mi',
+                ];
+
+                collect($regexs)
+                    ->each(function ($regex) use ($tag) {
+                        if (preg_match($regex, $tag->tag)) {
+                            Tags::updateOrCreate([
+                                'tag_safe'        => $tag->tag_safe,
+                            ], [
+                                'is_blacklisted'  => true,
+                            ]);
+                        }
+                    });
+            });
     }
 }

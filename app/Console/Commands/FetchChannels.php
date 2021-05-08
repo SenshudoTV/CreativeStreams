@@ -518,11 +518,32 @@ class FetchChannels extends Command
         if (! empty($title)) {
             preg_match_all("/(?<=^|\P{L})(#\b\p{L}[\p{L}\d_]+)/u", $title, $matches);
 
+            $regexs = [
+                '/^.*?monday.*$/mi',
+                '/^.*?tuesday.*$/mi',
+                '/^.*?wednesday.*$/mi',
+                '/^.*?thursday.*$/mi',
+                '/^.*?friday.*$/mi',
+                '/^.*?saturday.*$/mi',
+                '/^.*?sunday.*$/mi',
+                '/^.*?road.*$/mi',
+                '/^.*?team.*$/mi',
+                '/^.*?wayto.*$/mi',
+                '/^.*?dj.*$/mi',
+            ];
+
             if (! empty($matches)) {
                 foreach ($matches[0] as $hash) {
-                    $hashtag = str_replace('#', '', strtolower($hash));
+                    $hashtag      = str_replace('#', '', strtolower($hash));
+                    $regexMatched = false;
 
-                    if (! empty($hashtag) && ! in_array($hashtag, $this->blacklist)) {
+                    foreach ($regexs as $regex) {
+                        if (preg_match($regex, $hashtag)) {
+                            $regexMatched = true;
+                        }
+                    }
+
+                    if (! empty($hashtag) && ! in_array($hashtag, $this->blacklist) && ! $regexMatched) {
                         if (! in_array($hashtag, array_column($this->tags, 'tag'))) {
                             $this->tags[] = [
                                 'tag'           => $hashtag,
