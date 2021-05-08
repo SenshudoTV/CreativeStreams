@@ -2,7 +2,7 @@
     <div>
         <Featured :channel="selected" />
         <b-container>
-            <b-row v-if="total > 0" class="mb-2">
+            <b-row v-if="total > 0" class="mb-2" id="filterHeader">
                 <b-col :sm="12" :md="6" :lg="6" class="pl-0">
                     <h2 class="mb-0" id="streamHeading">{{ total }} Streams</h2>
                 </b-col>
@@ -72,7 +72,7 @@
                     />
                     <b-col :sm="12" :md="12" :lg="12" v-if="meta.last_page > 1">
                         <nav class="my-4" aria-label="Page Navigation">
-                            <ul class="pagination justify-content-center">
+                            <ul class="pagination justify-content-center flex-wrap">
                                 <li
                                     v-for="(link, index) in meta.links"
                                     :key="`pageItem${index}`"
