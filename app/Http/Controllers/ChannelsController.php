@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Resources\ChannelsCollectionResource;
 use App\Http\Resources\ChannelsResource;
 use App\Models\Channels;
+use App\Models\Tags;
 use Illuminate\Http\Request;
 
 class ChannelsController extends Controller
 {
     /**
-     * List Live Channels
-     *
-     * @return ChannelsCollectionResource
+     * List Live Channels.
      */
     public function index(Request $request): ChannelsCollectionResource
     {
@@ -24,34 +22,26 @@ class ChannelsController extends Controller
                 $filters = $request->get('filter');
 
                 if (array_key_exists('tag', $filters)) {
-                    $tags = explode(',', $filters['tag']);
+                    $tagIDs = explode(',', $filters['tag']);
 
-                    if (! empty($tags)) {
-                        $query->orWhere(function ($query) use ($tags) {
-                            if (is_array($tags)) {
-                                foreach ($tags as $tag) {
-                                    $query->orWhere('tags', 'LIKE', "%$tag%");
+                    if (! empty($tagIDs)) {
+                        foreach ($tagIDs as $tagID) {
+                            $tag = Tags::where('id', $tagID)->first();
+
+                            if (! $tag->is_blacklisted) {
+                                if ($tag->is_tag) {
+                                    $query->orWhere('tags', 'LIKE', "%$tag->tag_id%");
                                 }
-                            } else {
-                                $query->orWhere('tags', 'LIKE', "%$tags%");
-                            }
-                        });
-                    }
-                }
 
-                if (array_key_exists('hashtag', $filters)) {
-                    $hashs = explode(',', $filters['hashtag']);
-
-                    if (! empty($hashs)) {
-                        $query->orWhere(function ($query) use ($hashs) {
-                            if (is_array($hashs)) {
-                                foreach ($hashs as $hash) {
-                                    $query->orWhere('title', 'LIKE', "%#$hash%");
+                                if ($tag->is_hashtag) {
+                                    $query->orWhere('title', 'LIKE', "%#$tag->tag%");
                                 }
-                            } else {
-                                $query->orWhere('title', 'LIKE', "%#$hashs%");
+
+                                if ($tag->is_category) {
+                                    $query->orWhere('game_id', '=', $tag->tag_id);
+                                }
                             }
-                        });
+                        }
                     }
                 }
             }
@@ -80,9 +70,7 @@ class ChannelsController extends Controller
     }
 
     /**
-     * Fetch a random live stream
-     *
-     * @return ChannelsResource
+     * Fetch a random live stream.
      */
     public function random(): ChannelsResource
     {

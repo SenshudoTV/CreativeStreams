@@ -8,11 +8,9 @@
     <testsuites>
         <testsuite name="Unit">
             <directory suffix="Test.php">./tests/Unit</directory>
-            <directory suffix="Test.php">./Modules/**/Tests/Unit</directory>
         </testsuite>
         <testsuite name="Feature">
             <directory suffix="Test.php">./tests/Feature</directory>
-            <directory suffix="Test.php">./Modules/**/Tests/Feature</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
@@ -24,15 +22,6 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./app</directory>
-            <directory suffix=".php">./Modules</directory>
-            <exclude>
-                <directory suffix=".blade.php">./Modules</directory>
-                <directory suffix=".php">./Modules/**/Config</directory>
-                <directory suffix=".php">./Modules/**/Database</directory>
-                <directory suffix=".php">./Modules/**/Resources</directory>
-                <directory suffix=".php">./Modules/**/Route</directory>
-                <directory suffix=".php">./Modules/**/Tests</directory>
-            </exclude>
         </whitelist>
     </filter>
 
@@ -51,7 +40,7 @@
         <server name="QUEUE_CONNECTION" value="sync"/>
         <server name="SESSION_DRIVER" value="array"/>
         <server name="TELESCOPE_ENABLED" value="false"/>
-        
+
         <server name="APP_KEY" value="base64:VVLZ6rvSw76tiug4RnYOsD53kRjy4ZSBCZ7EIfxnSjI="/>
         <server name="JWT_SECRET" value="oiB58pgyneoulp3BRkZc6fnN5ERJlFOGbJXhxoD4zqM1TSbhpXc8mlR2L64NMCgi"/>
     </php>

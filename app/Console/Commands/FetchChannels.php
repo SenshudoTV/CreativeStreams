@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Channels;
 use App\Models\Tags;
+use Arr;
 use Carbon\Carbon;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Console\Command;
@@ -26,14 +27,14 @@ class FetchChannels extends Command
     protected $description = 'Fetch all live creative channels';
 
     /**
-     * Guzzle Client
+     * Guzzle Client.
      *
      * @var GuzzleClient
      */
     protected $client;
 
     /**
-     * Blacklisted Tags
+     * Blacklisted Tags.
      *
      * @var array
      */
@@ -168,14 +169,87 @@ class FetchChannels extends Command
     ];
 
     /**
-     * Global Tags
+     * Global Tags.
      *
      * @var array
      */
-    protected $tags = [];
+    protected $tags = [
+        [
+            'tag_id'        => '509660',
+            'tag'           => 'Art',
+            'tag_safe'      => 'art',
+            'is_tag'        => false,
+            'is_hashtag'    => false,
+            'is_category'   => true,
+            'count'         => 0,
+        ],
+        [
+            'tag_id'        => '509661',
+            'tag'           => 'Beauty & Body Art',
+            'tag_safe'      => 'beauty-body-art',
+            'is_tag'        => false,
+            'is_hashtag'    => false,
+            'is_category'   => true,
+            'count'         => 0,
+        ],
+        [
+            'tag_id'        => '488191',
+            'tag'           => 'Creative',
+            'tag_safe'      => 'creative',
+            'is_tag'        => false,
+            'is_hashtag'    => false,
+            'is_category'   => true,
+            'count'         => 0,
+        ],
+        [
+            'tag_id'        => '509662',
+            'tag'           => 'Food & Drink',
+            'tag_safe'      => 'food-drink',
+            'is_tag'        => false,
+            'is_hashtag'    => false,
+            'is_category'   => true,
+            'count'         => 0,
+        ],
+        [
+            'tag_id'        => '509673',
+            'tag'           => 'Makers & Crafting',
+            'tag_safe'      => 'makers-crafting',
+            'is_tag'        => false,
+            'is_hashtag'    => false,
+            'is_category'   => true,
+            'count'         => 0,
+        ],
+        [
+            'tag_id'        => '26936',
+            'tag'           => 'Music & Performing Arts',
+            'tag_safe'      => 'music-performing-arts',
+            'is_tag'        => false,
+            'is_hashtag'    => false,
+            'is_category'   => true,
+            'count'         => 0,
+        ],
+        [
+            'tag_id'        => '509670',
+            'tag'           => 'Science & Technology',
+            'tag_safe'      => 'science-technology',
+            'is_tag'        => false,
+            'is_hashtag'    => false,
+            'is_category'   => true,
+            'count'         => 0,
+        ],
+        [
+            'tag_id'        => '417752',
+            'tag'           => 'Talk Shows & Podcasts',
+            'tag_safe'      => 'talk-shows-podcasts',
+            'is_tag'        => false,
+            'is_hashtag'    => false,
+            'is_category'   => true,
+            'count'         => 0,
+        ],
+    ];
 
     /**
-     * Total Requests Made
+     * Total Requests Made.
      *
      * @var int
      */
@@ -196,7 +270,7 @@ class FetchChannels extends Command
         $this->client = new GuzzleClient([
             'base_uri'  => 'https://api.twitch.tv/helix/',
             'headers'   => [
-                'Client-ID' => config('app.twitch.id'),
+                'Client-ID'     => config('app.twitch.id'),
                 'Authorization' => 'Bearer ' . $env['twitch_token'],
             ],
         ]);
@@ -212,16 +286,31 @@ class FetchChannels extends Command
         Channels::setAllOffline();
         Tags::resetCount();
 
+        $this->expandBlacklist();
         $this->fetchStreams();
 
         return 0;
     }
 
     /**
-     * Fetch live creative streams from Twitch API
+     * Expand the existing blacklist with database blacklisted tags.
+     */
+    private function expandBlacklist(): void
+    {
+        $tags = Tags::where('is_blacklisted', true)->get();
+
+        collect($tags)
+            ->each(function ($tag) {
+                if (! in_array($tag->tag, $this->blacklist)) {
+                    $this->blacklist[] = $tag->tag;
+                }
+            });
+    }
+
+    /**
+     * Fetch live creative streams from Twitch API.
      *
      * @param string $cursor Pagination Cursor
-     * @return void
      */
     private function fetchStreams(string $cursor = null): void
     {
@@ -230,13 +319,14 @@ class FetchChannels extends Command
         }
 
         $catIDs = [
-            'Art' => 509660,
-            'Beauty & Body Art' => 509661,
-            'Creative' => 488191,
-            'Food & Drink' => 509662,
-            'Makers & Crafting' => 509673,
+            'Art'                     => 509660,
+            'Beauty & Body Art'       => 509661,
+            'Creative'                => 488191,
+            'Food & Drink'            => 509662,
+            'Makers & Crafting'       => 509673,
             'Music & Performing Arts' => 26936,
-            'Science & Technology' => 509670,
+            'Science & Technology'    => 509670,
+            'Talk Shows & Podcasts'   => 417752,
         ];
 
         $gameIds = '&game_id=' . implode('&game_id=', $catIDs);
@@ -247,7 +337,7 @@ class FetchChannels extends Command
             $responseBody = json_decode($response->getBody()->getContents());
 
             if (! empty($responseBody) && ! empty($responseBody->data)) {
-                $this->requestCount += 1;
+                $this->requestCount++;
 
                 foreach ($responseBody->data as $stream) {
                     $user = [
@@ -258,7 +348,7 @@ class FetchChannels extends Command
                     ];
 
                     $userResponse = $this->client->request('GET', 'users?id=' . $stream->user_id);
-                    $this->requestCount += 1;
+                    $this->requestCount++;
 
                     if ($userResponse->getStatusCode() === 200) {
                         $userResponseBody = json_decode($userResponse->getBody()->getContents());
@@ -280,13 +370,13 @@ class FetchChannels extends Command
                     $tagsEmpty = (empty($stream->tag_ids) && $stream->tag_ids === null);
 
                     $this->populateTags(
-                        ! $tagsEmpty ? $stream->tag_ids : []
+                        ! $tagsEmpty ? $stream->tag_ids : [],
+                        $stream->game_id
                     );
 
                     Channels::updateOrCreate([
                         'id'                    => $stream->user_id,
                     ], [
-                        'id'                    => $stream->user_id,
                         'name'                  => $stream->user_name,
                         'slug'                  => $user['slug'],
                         'stream_created'        => Carbon::createFromFormat('Y-m-d\TH:i:s\Z', $stream->started_at),
@@ -295,7 +385,7 @@ class FetchChannels extends Command
                         'game_id'               => $stream->game_id,
                         'avatar'                => $user['avatar'],
                         'thumbnail'             => str_replace(
-                            ['{width}','{height}'],
+                            ['{width}', '{height}'],
                             [600, 337],
                             $stream->thumbnail_url
                         ),
@@ -337,14 +427,21 @@ class FetchChannels extends Command
     }
 
     /**
-     * Populate global Tags for processing
+     * Populate global Tags for processing.
      *
      * @param array $tag_ids Stream Known Tags
-     * @return void
      */
-    private function populateTags(array $tag_ids = []): void
+    private function populateTags(array $tag_ids = [], int | null $game_id = 0): void
     {
         $searchTags = [];
+
+        if (! empty($game_id)) {
+            if (in_array($game_id, array_column($this->tags, 'tag_id'))) {
+                $key = array_search($game_id, array_column($this->tags, 'tag_id'));
+
+                $this->tags[$key]['count']++;
+            }
+        }
 
         if (! empty($tag_ids)) {
             foreach ($tag_ids as $tag) {
@@ -376,7 +473,7 @@ class FetchChannels extends Command
                 } else {
                     $key = array_search($tag, array_column($this->tags, 'tag_id'));
 
-                    $this->tags[$key]['count'] += 1;
+                    $this->tags[$key]['count']++;
                 }
             }
         }
@@ -386,7 +483,7 @@ class FetchChannels extends Command
 
             foreach ($tagChunks as $tags) {
                 $tagResponse = $this->client->request('GET', 'tags/streams?tag_id=' . implode('&tag_id=', $tags));
-                $this->requestCount += 1;
+                $this->requestCount++;
 
                 if ($tagResponse->getStatusCode() === 200) {
                     $tagResponseBody = json_decode($tagResponse->getBody()->getContents());
@@ -396,7 +493,7 @@ class FetchChannels extends Command
                             if (in_array($tag->tag_id, array_column($this->tags, 'tag_id'))) {
                                 $key = array_search($tag->tag_id, array_column($this->tags, 'tag_id'));
 
-                                $this->tags[$key]['tag'] = $tag->localization_names->{'en-us'};
+                                $this->tags[$key]['tag']      = $tag->localization_names->{'en-us'};
                                 $this->tags[$key]['tag_safe'] = Str::slug($tag->localization_names->{'en-us'});
                             }
                         }
@@ -412,21 +509,41 @@ class FetchChannels extends Command
     }
 
     /**
-     * Find hashtags within the streams title for population
+     * Find hashtags within the streams title for population.
      *
      * @param array $title Stream Title
-     * @return void
      */
     private function populateHashtags(string $title = null): void
     {
         if (! empty($title)) {
             preg_match_all("/(?<=^|\P{L})(#\b\p{L}[\p{L}\d_]+)/u", $title, $matches);
 
+            $regexs = [
+                '/^.*?monday.*$/mi',
+                '/^.*?tuesday.*$/mi',
+                '/^.*?wednesday.*$/mi',
+                '/^.*?thursday.*$/mi',
+                '/^.*?friday.*$/mi',
+                '/^.*?saturday.*$/mi',
+                '/^.*?sunday.*$/mi',
+                '/^.*?road.*$/mi',
+                '/^.*?team.*$/mi',
+                '/^.*?wayto.*$/mi',
+                '/^.*?dj.*$/mi',
+            ];
+
             if (! empty($matches)) {
                 foreach ($matches[0] as $hash) {
-                    $hashtag = str_replace('#', '', strtolower($hash));
+                    $hashtag      = str_replace('#', '', strtolower($hash));
+                    $regexMatched = false;
 
-                    if (! empty($hashtag) && ! in_array($hashtag, $this->blacklist)) {
+                    foreach ($regexs as $regex) {
+                        if (preg_match($regex, $hashtag)) {
+                            $regexMatched = true;
+                        }
+                    }
+
+                    if (! empty($hashtag) && ! in_array($hashtag, $this->blacklist) && ! $regexMatched) {
                         if (! in_array($hashtag, array_column($this->tags, 'tag'))) {
                             $this->tags[] = [
                                 'tag'           => $hashtag,
@@ -439,7 +556,7 @@ class FetchChannels extends Command
                         } else {
                             $key = array_search($hashtag, array_column($this->tags, 'tag'));
 
-                            $this->tags[$key]['count'] += 1;
+                            $this->tags[$key]['count']++;
                         }
                     }
                 }
@@ -448,17 +565,17 @@ class FetchChannels extends Command
     }
 
     /**
-     * Update Tags Table
-     *
-     * @return void
+     * Update Tags Table.
      */
     private function updateTags(): void
     {
         if (! empty($this->tags)) {
             foreach ($this->tags as $tag) {
-                Tags::updateOrCreate([
-                    'tag_safe'    => $tag['tag_safe'],
-                ], $tag);
+                if (! empty($tag['tag'])) {
+                    Tags::updateOrCreate([
+                        'tag_safe'    => $tag['tag_safe'],
+                    ], Arr::except($tag, ['tag_safe']));
+                }
             }
         }
     }

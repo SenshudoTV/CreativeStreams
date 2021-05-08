@@ -149,8 +149,7 @@ export default {
             this.loading = true
 
             let page = 1,
-                tags = null,
-                hashs = null
+                tags = null
 
             if (link !== null) {
                 const url = new URL(link)
@@ -161,18 +160,10 @@ export default {
             }
 
             this.filters.filter.forEach((element) => {
-                if (element.is_tag === false) {
-                    if (hashs === null) {
-                        hashs = element.tag.replace('#', '') + ','
-                    } else {
-                        hashs += element.tag.replace('#', '') + ','
-                    }
+                if (tags === null) {
+                    tags = element.id + ','
                 } else {
-                    if (tags === null) {
-                        tags = element.id + ','
-                    } else {
-                        tags += element.id + ','
-                    }
+                    tags += element.id + ','
                 }
             })
 
@@ -180,16 +171,11 @@ export default {
                 tags = tags.replace(/,\s*$/, '')
             }
 
-            if (hashs !== null) {
-                hashs = hashs.replace(/,\s*$/, '')
-            }
-
             window.axios
                 .get(
                     this.route('channels.list', {
                         page: page,
                         'filter[tag]': tags,
-                        'filter[hashtag]': hashs,
                         order: this.filters.order,
                     }),
                 )

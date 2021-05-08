@@ -15,12 +15,12 @@ spec:
         app: "{{ .Values.image.repository }}"
     spec:
       volumes:
+        - name: nginx-config-volume
+          configMap:
+            name: {{ .Values.image.repository }}-nginx-config
         - name: local-mount
           hostPath:
-            path: "{{ .Values.projectPath }}"
-        - name: apache-config-volume
-          configMap:
-            name: {{ .Values.image.repository }}-apache-config
+            path: {{ .Values.projectPath }}
       containers:
         - name: app
           image: "creativestreams:latest"
@@ -28,6 +28,14 @@ spec:
           volumeMounts:
             - name: local-mount
               mountPath: /var/www/creativestreams.test
-            - name: apache-config-volume
-              mountPath: /etc/apache2/apache2.conf
-              subPath: apache2.conf
+
+        - name: nginx
+          image: nginx:1.19-alpine
+          volumeMounts:
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: local-mount
+              mountPath: /var/www/creativestreams.test
+
+

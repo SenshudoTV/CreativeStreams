@@ -16,5 +16,9 @@ grumphp:
             metadata:
                 label: prettier
         phpcsfixer:
-            config: .php_cs.dist
+            config: .php-cs-fixer.dist.php
             using_cache: false
+        securitychecker_local:
+            lockfile: ./composer.lock
+            format: ~
+            run_always: true

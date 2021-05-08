@@ -22,7 +22,7 @@ class ValidateToken extends Command
     protected $description = 'Validate our Twitch OAuth Token';
 
     /**
-     * Guzzle Client
+     * Guzzle Client.
      *
      * @var GuzzleClient
      */
@@ -90,10 +90,9 @@ class ValidateToken extends Command
     }
 
     /**
-     * Update our .env File
+     * Update our .env File.
      *
      * @param array $data
-     * @return bool
      */
     protected function updateEnv($data = []): bool
     {

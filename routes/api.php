@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ChannelsController;
 use App\Http\Controllers\TagsController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*

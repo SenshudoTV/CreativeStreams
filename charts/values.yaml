@@ -5,7 +5,7 @@ repositoryName: CreativeStreams
 image:
   repository: creativestreams
   pullPolicy: IfNotPresent
-  registry: senshudo
+  registry: creativestreams
 projectPath: ""
 xdebugEnabled: false
 
@@ -30,13 +30,7 @@ ingress:
     kubernetes.io/ingress.class: traefik
   hosts:
     - name: creativestreams
-      host: creativestreams.test
-      paths: ["/"]
-    - name: creativestreamswww
       host: www.creativestreams.test
-      paths: ["/"]
-    - name: creativestreamswaypoint
-      host: waypoint.creativestreams.test
       paths: ["/"]
 
 resources: {}

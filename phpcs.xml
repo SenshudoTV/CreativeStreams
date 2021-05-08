@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Senshudo Laravel Standard">
-    <description>PHPCS Standards for Laravel</description>
+<ruleset name="Senshudo Standard">
+    <description>PHPCS Standards for Senshudo</description>
 
     <rule ref="PSR1" />
 
@@ -39,7 +39,13 @@
     </rule>
 
     <rule ref="Generic.Formatting.DisallowMultipleStatements" />
-    <!--<rule ref="Generic.Whitespace.DisallowTabIndent" />-->
+
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="tabIndent" value="false" />
+        </properties>
+    </rule>
+
     <rule ref="Generic.PHP.LowerCaseKeyword" />
     <rule ref="Generic.PHP.LowerCaseConstant" />
 
@@ -79,6 +85,7 @@
     <exclude-pattern>./public_html/index.php</exclude-pattern>
     <exclude-pattern>./resources/*</exclude-pattern>
     <exclude-pattern>./storage/*</exclude-pattern>
+    <exclude-pattern>./vendor/*</exclude-pattern>
     <exclude-pattern>./_ide_helper.php</exclude-pattern>
     <exclude-pattern>./.phpstorm.meta.php</exclude-pattern>
 

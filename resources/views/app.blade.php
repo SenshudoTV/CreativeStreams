@@ -8,15 +8,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="fragment" content="!">
         <title>Creative Streams</title>
-        <link rel="preload" href="{{ mix('/fonts/RB-L-700.woff2') }}" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="{{ mix('/fonts/RB-LE-700.woff2') }}" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="{{ asset('/fonts/RB-L-700.woff2') }}" as="font" type="font/woff2" crossorigin>
+		<link rel="preload" href="{{ asset('/fonts/RB-LE-700.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link href="{{ mix('/css/app.css') }}" rel="stylesheet" />
-        <script src="{{ mix('/js/runtime.js') }}" defer type="text/javascript"></script>
-        <script src="{{ mix('/js/vendors.js') }}" defer type="text/javascript"></script>
+        <script src="{{ mix('/js/manifest.js') }}" defer type="text/javascript"></script>
+        <script src="{{ mix('/js/vendor.js') }}" defer type="text/javascript"></script>
         <script src="{{ mix('/js/app.js') }}" defer type="text/javascript"></script>
     </head>
 
-    <body class="app-light">
+    <body class="h-100 app-light">
         @inertia
     </body>
 </html>
