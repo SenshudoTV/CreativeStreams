@@ -27,10 +27,8 @@ mix.webpackConfig({
         minimize: mix.inProduction(),
         minimizer: [
             new TerserPlugin ({
-                cache: true,
                 parallel: false,
                 extractComments: false,
-                sourceMap: !mix.inProduction(),
                 terserOptions: {
                     compress: mix.inProduction(),
                 },
