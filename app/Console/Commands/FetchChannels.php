@@ -4,11 +4,11 @@ namespace App\Console\Commands;
 
 use App\Models\Channels;
 use App\Models\Tags;
-use Arr;
 use Carbon\Carbon;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Console\Command;
-use Str;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class FetchChannels extends Command
 {
@@ -256,6 +256,13 @@ class FetchChannels extends Command
     protected $requestCount = 0;
 
     /**
+     * Twitch Config File loaded
+     * 
+     * @var boolean
+     */
+    protected $configLoaded = false;
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -264,16 +271,20 @@ class FetchChannels extends Command
     {
         parent::__construct();
 
-        $env = file_get_contents(base_path() . '/twitch.json');
-        $env = json_decode($env, true);
+        if (file_exists(base_path() . '/twitch.json')) {
+            $env = file_get_contents(base_path() . '/twitch.json');
+            $env = json_decode($env, true);
 
-        $this->client = new GuzzleClient([
-            'base_uri'  => 'https://api.twitch.tv/helix/',
-            'headers'   => [
-                'Client-ID'     => config('app.twitch.id'),
-                'Authorization' => 'Bearer ' . $env['twitch_token'],
-            ],
-        ]);
+            $this->client = new GuzzleClient([
+                'base_uri'  => 'https://api.twitch.tv/helix/',
+                'headers'   => [
+                    'Client-ID'     => config('app.twitch.id'),
+                    'Authorization' => 'Bearer ' . $env['twitch_token'],
+                ],
+            ]);
+
+            $this->configLoaded = true;
+        }
     }
 
     /**
@@ -283,11 +294,13 @@ class FetchChannels extends Command
      */
     public function handle()
     {
-        Channels::setAllOffline();
-        Tags::resetCount();
+        if ($this->configLoaded) {
+            Channels::setAllOffline();
+            Tags::resetCount();
 
-        $this->expandBlacklist();
-        $this->fetchStreams();
+            $this->expandBlacklist();
+            $this->fetchStreams();
+        }
 
         return 0;
     }
