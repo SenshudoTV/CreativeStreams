@@ -57,6 +57,7 @@ html {
         height: 100%;
         overflow: hidden;
         top: 0;
+        z-index: 0;
 
         .fancyAnimationLayerItem {
             animation-timing-function: linear;
@@ -74,6 +75,10 @@ html {
             background-size: cover;
             background-image: url('./../images/glitch.png');
         }
+    }
+
+    .container-fluid {
+        z-index: 1;
     }
 
     .player {
@@ -199,6 +204,7 @@ html {
 
 .channel-card {
     margin: 8px 4px;
+    padding: 0;
     flex-basis: calc(33.3333% - 8px);
     flex-grow: 0;
     flex-shrink: 0;

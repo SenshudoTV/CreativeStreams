@@ -1,6 +1,7 @@
-const path = require('path');
-const mix = require('laravel-mix');
-const TerserPlugin = require('terser-webpack-plugin');
+const path = require('path')
+const mix = require('laravel-mix')
+const ESLintPlugin = require('eslint-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 /*
  |--------------------------------------------------------------------------
@@ -18,9 +19,9 @@ mix.webpackConfig({
     resolve: {
         extensions: ['.js', '.jsx', '.vue'],
         alias: {
-            ziggy: path.resolve('vendor/tightenco/ziggy/src/js'),
-            vue$: 'vue/dist/vue.runtime.esm.js',
-            '@': path.resolve('resources/assets/js'),
+            'ziggy-js': path.join(__dirname, 'vendor/tightenco/ziggy/dist/vue.m.js'),
+            vue$: path.join(__dirname, 'node_modules/vue/dist/vue.runtime.esm.js'),
+            '@': path.join(__dirname, 'resources/assets/js'),
         },
     },
     optimization: {
@@ -35,10 +36,15 @@ mix.webpackConfig({
             }),
         ],
     },
+    plugins: [
+        new ESLintPlugin({
+            extensions: ['.js', '.jsx', '.vue'],
+        }),
+    ],
 })
     .sass('resources/assets/sass/app.scss', 'css')
     .js('resources/assets/js/app.js', 'js')
     .vue()
-    .extract(['vue', 'moment', 'axios', 'bootstrap-vue'])
+    .extract(['vue', 'moment', 'axios'])
     .version()
-    .setPublicPath('public_html');
+    .setPublicPath('public_html')

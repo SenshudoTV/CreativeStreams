@@ -10,47 +10,50 @@
             </template>
         </div>
 
-        <b-container fluid>
-            <b-row>
-                <b-col>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
                     <div class="player">
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <div class="embed-responsive-item" id="channelEmbed"></div>
-                        </div>
+                        <div class="ratio ratio-16x9" id="channelEmbed"></div>
                     </div>
                     <div class="playerBtns">
-                        <b-row>
-                            <b-col :sm="6" :md="6">
+                        <div class="row">
+                            <div class="col-6">
                                 <div class="p-2 text-light">
                                     <font-awesome-icon :icon="['fas', 'eye']" />
                                     <span id="viewers">
                                         {{ this.formatNumber(featuredChannel.viewers) }}
                                     </span>
                                 </div>
-                            </b-col>
-                            <b-col :sm="6" :md="6" class="text-right">
-                                <b-button
+                            </div>
+                            <div class="col-6 text-end">
+                                <button
                                     v-if="isAuthorized"
-                                    :variant="isFollowing ? 'danger' : 'success'"
+                                    :class="{
+                                        btn: true,
+                                        'btn-danger': isFollowing,
+                                        'btn-success': !isFollowing,
+                                    }"
+                                    type="button"
                                     @click="handleFollowship"
                                 >
                                     {{ isFollowing ? 'Unfollow' : 'Follow' }}
-                                </b-button>
-                                <b-button
-                                    variant="light"
+                                </button>
+                                <button
+                                    class="btn btn-light"
                                     :href="`https://www.twitch.tv/${featuredChannel.slug}`"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
                                     <font-awesome-icon :icon="['fas', 'comments']" />
                                     Enter Chat
-                                </b-button>
-                            </b-col>
-                        </b-row>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </b-col>
-            </b-row>
-        </b-container>
+                </div>
+            </div>
+        </div>
     </header>
 </template>
 

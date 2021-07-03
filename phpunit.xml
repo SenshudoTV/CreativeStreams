@@ -7,32 +7,28 @@
 >
     <testsuites>
         <testsuite name="Unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
+            <directory suffix="Test.php">tests/Unit</directory>
         </testsuite>
         <testsuite name="Feature">
-            <directory suffix="Test.php">./tests/Feature</directory>
+            <directory suffix="Test.php">tests/Feature</directory>
         </testsuite>
     </testsuites>
+
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">./app</directory>
+            <directory suffix=".php">app</directory>
         </include>
+
+        <report>
+            <clover outputFile="./report/clover/coverage.xml"/>
+            <html outputDirectory="./report/html" lowUpperBound="50" highLowerBound="80"/>
+        </report>
     </coverage>
-
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./app</directory>
-        </whitelist>
-    </filter>
-
-    <logging>
-        <log type="coverage-html" target="./report/html" lowUpperBound="50" highLowerBound="80"/>
-        <log type="coverage-clover" target="./report/clover/coverage.xml"/>
-    </logging>
 
     <php>
         <server name="APP_ENV" value="testing"/>
         <server name="APP_DEBUG" value="true"/>
+        <server name="APP_KEY" value="base64:VVLZ6rvSw76tiug4RnYOsD53kRjy4ZSBCZ7EIfxnSjI="/>
         <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="CACHE_DRIVER" value="array"/>
         <server name="DB_CONNECTION" value="sqlite_testing"/>
@@ -40,8 +36,6 @@
         <server name="QUEUE_CONNECTION" value="sync"/>
         <server name="SESSION_DRIVER" value="array"/>
         <server name="TELESCOPE_ENABLED" value="false"/>
-
-        <server name="APP_KEY" value="base64:VVLZ6rvSw76tiug4RnYOsD53kRjy4ZSBCZ7EIfxnSjI="/>
         <server name="JWT_SECRET" value="oiB58pgyneoulp3BRkZc6fnN5ERJlFOGbJXhxoD4zqM1TSbhpXc8mlR2L64NMCgi"/>
     </php>
 </phpunit>

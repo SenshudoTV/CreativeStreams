@@ -1,20 +1,20 @@
 <template>
     <div>
         <Featured :channel="selected" />
-        <b-container>
-            <b-row v-if="total > 0" class="mb-2" id="filterHeader">
-                <b-col :sm="12" :md="6" :lg="6" class="pl-0">
+        <div class="container">
+            <div class="row mb-2" v-if="total > 0" id="filterHeader">
+                <div class="col-sm-12 col-md-6 col-lg-6 ps-0">
                     <h2 class="mb-0" id="streamHeading">{{ total }} Streams</h2>
-                </b-col>
-                <b-col :sm="12" :md="6" :lg="6" class="pr-0 text-right">
-                    <b-button variant="primary" @click.prevent="toggleFilters">
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-6 pe-0 text-end">
+                    <button class="btn btn-primary" type="button" @click.prevent="toggleFilters">
                         <font-awesome-icon :icon="['fas', 'filter']" />
                         Filter
-                    </b-button>
-                </b-col>
-            </b-row>
-            <b-row class="mb-2" id="filterContainer" v-if="displayFilters">
-                <b-col :sm="12" :md="6" :lg="8" class="pl-0">
+                    </button>
+                </div>
+            </div>
+            <div class="row mb-2" id="filterContainer" v-if="displayFilters">
+                <div class="col-sm-12 col-md-6 col-lg-8 ps-0">
                     <multiselect
                         v-model="filters.filter"
                         :options="options.filters"
@@ -25,18 +25,26 @@
                         label="tag"
                         track-by="id"
                     />
-                </b-col>
-                <b-col :sm="12" :md="4" :lg="3" class="px-0">
-                    <b-select v-model="filters.order" :options="options.order" />
-                </b-col>
-                <b-col :sm="12" :md="2" :lg="1" class="pr-0">
-                    <b-button block variant="primary" @click="fetchChannels()">
+                </div>
+                <div class="col-sm-12 col-md-4 col-lg-3 px-0">
+                    <select class="form-control custom-select" v-model="filters.order">
+                        <option
+                            v-for="(option, index) in options.order"
+                            :key="index"
+                            :value="option.value"
+                        >
+                            {{ option.text }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-sm-12 col-md-2 col-lg-1 pe-0">
+                    <button class="btn btn-primary w-100" type="button" @click="fetchChannels()">
                         <font-awesome-icon :icon="['fas', 'search']" />
-                    </b-button>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col v-if="loading" class="loading text-center">
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col loading text-center" v-if="loading">
                     <div class="lds-roller mb-2">
                         <div></div>
                         <div></div>
@@ -48,12 +56,12 @@
                         <div></div>
                     </div>
                     <p>Loading Streams...</p>
-                </b-col>
-                <b-col v-else-if="error">
-                    <b-alert variant="danger" class="text-center flex-fill" show>
+                </div>
+                <div class="col" v-else-if="error">
+                    <div class="alert alert-danger text-center flex-fill">
                         {{ errorMessage }}
-                    </b-alert>
-                </b-col>
+                    </div>
+                </div>
                 <template v-else>
                     <Channel
                         v-for="channel in channels"
@@ -70,29 +78,84 @@
                         :thumbnailSRC="channel.thumbnail"
                         @click="handleClick"
                     />
-                    <b-col :sm="12" :md="12" :lg="12" v-if="meta.last_page > 1">
-                        <nav class="my-4" aria-label="Page Navigation">
-                            <ul class="pagination justify-content-center flex-wrap">
+                    <div class="col-12" v-if="meta.last_page > 1">
+                        <nav aria-label="Page Navigation">
+                            <ul class="pagination my-3 justify-content-center">
+                                <li class="page-item" v-if="page.current > page.first">
+                                    <a
+                                        href="#"
+                                        @click.prevent="fetchChannels(page.first, true)"
+                                        class="page-link"
+                                        aria-link="First Page"
+                                        title="First Page"
+                                    >
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" v-if="page.current > 1">
+                                    <a
+                                        href="#"
+                                        @click.prevent="fetchChannels(page.current - 1, true)"
+                                        class="page-link"
+                                        aria-link="Previous Page"
+                                        title="Previous Page"
+                                    >
+                                        <span aria-hidden="true">&lt;</span>
+                                    </a>
+                                </li>
                                 <li
-                                    v-for="(link, index) in meta.links"
-                                    :key="`pageItem${index}`"
-                                    class="page-item"
-                                    :class="{ disabled: link.url === null, active: link.active }"
+                                    v-for="p in page.range"
+                                    :key="`page${p}`"
+                                    :class="{
+                                        'page-item': true,
+                                        active: page.current === p,
+                                    }"
+                                    :aria-current="page.current === p ? 'page' : null"
                                 >
                                     <a
-                                        class="page-link"
                                         href="#"
-                                        v-html="link.label"
-                                        @click.prevent="fetchChannels(link.url)"
-                                        :aria-disabled="link.url === null"
-                                    ></a>
+                                        @click.prevent="fetchChannels(p, true)"
+                                        class="page-link"
+                                        :aria-link="`Page ${p}`"
+                                        :title="`Page ${p}`"
+                                    >
+                                        {{ p }}
+                                    </a>
+                                </li>
+                                <li
+                                    class="page-item"
+                                    v-if="page.current >= 1 && page.current < page.last"
+                                >
+                                    <a
+                                        href="#"
+                                        @click.prevent="fetchChannels(page.current + 1, true)"
+                                        class="page-link"
+                                        aria-link="Next Page"
+                                        title="Next Page"
+                                    >
+                                        <span aria-hidden="true">&gt;</span>
+                                    </a>
+                                </li>
+                                <li
+                                    class="page-item"
+                                    v-if="page.current !== page.last && page.next < page.last"
+                                >
+                                    <a
+                                        href="#"
+                                        @click.prevent="fetchChannels(page.last, true)"
+                                        class="page-link"
+                                        aria-link="Last Page"
+                                        title="Last Page"
+                                    >
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
                                 </li>
                             </ul>
                         </nav>
-                    </b-col>
+                    </div>
                 </template>
-            </b-row>
-        </b-container>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -131,6 +194,17 @@ export default {
             selected: undefined,
             channels: [],
             meta: [],
+            range: 15,
+            page: {
+                first: 1,
+                previous: null,
+                current: 1,
+                next: null,
+                last: null,
+                min: 0,
+                max: 0,
+                range: [],
+            },
         }
     },
     mounted() {
@@ -145,17 +219,12 @@ export default {
                 document.getElementById('channelEmbed').scrollIntoView()
             }
         },
-        fetchChannels: function (link = null) {
+        fetchChannels: function (page = 1, pagination = false) {
             this.loading = true
 
-            let page = 1,
-                tags = null
+            let tags = null
 
-            if (link !== null) {
-                const url = new URL(link)
-
-                page = parseInt(url.searchParams.get('page'))
-
+            if (pagination) {
                 document.getElementById('streamHeading').scrollIntoView()
             }
 
@@ -185,6 +254,7 @@ export default {
                     this.channels = response.data.data
                     this.meta = response.data.meta
                     this.total = response.data.meta.total
+                    this.calcPageRange()
 
                     if (this.total === 0) {
                         this.error = true
@@ -212,6 +282,45 @@ export default {
         },
         toggleFilters: function () {
             this.displayFilters = !this.displayFilters
+        },
+        calcPageRange: function () {
+            let previousPage = this.meta.current_page - 1
+            let nextPage = this.meta.current_page + 1
+            let maxPagesBeforeCurrentPage = Math.floor(this.range / 2)
+            let maxPagesAfterCurrentPage = Math.floor(this.range / 2) - 1
+
+            if (previousPage < 1) {
+                previousPage = null
+            }
+
+            if (nextPage > this.meta.last_page) {
+                nextPage = null
+            }
+
+            this.page.current = this.meta.current_page
+            this.page.previous = previousPage
+            this.page.next = nextPage
+            this.page.last = this.meta.last_page
+
+            if (this.page.last <= this.range) {
+                this.page.min = 1
+                this.page.max = this.page.last
+            } else {
+                if (this.page.current <= maxPagesBeforeCurrentPage) {
+                    this.page.min = 1
+                    this.page.max = this.range
+                } else if (this.page.current + maxPagesAfterCurrentPage >= this.page.last) {
+                    this.page.min = this.page.last - this.range + 1
+                    this.page.max = this.page.last
+                } else {
+                    this.page.min = this.page.current - maxPagesBeforeCurrentPage
+                    this.page.max = this.page.current + maxPagesAfterCurrentPage
+                }
+            }
+
+            this.page.range = Array.from(Array(this.page.max + 1 - this.page.min).keys()).map(
+                (i) => this.page.min + i,
+            )
         },
     },
 }

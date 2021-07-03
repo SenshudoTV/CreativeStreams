@@ -1,10 +1,8 @@
-import route from 'ziggy'
+import { ZiggyVue } from 'ziggy-js'
 import { Ziggy } from '@/ziggy'
-import { App, plugin } from '@inertiajs/inertia-vue'
-import { InertiaProgress } from '@inertiajs/progress'
 import Vue from 'vue'
-import VueMeta from 'vue-meta'
-import { BootstrapVue } from 'bootstrap-vue'
+import { createInertiaApp } from '@inertiajs/inertia-vue'
+import { InertiaProgress } from '@inertiajs/progress'
 import Multiselect from 'vue-multiselect'
 import moment from 'moment'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -59,9 +57,7 @@ library.add(
 )
 
 Vue.config.productionTip = false
-Vue.use(plugin)
-Vue.use(BootstrapVue)
-Vue.use(VueMeta)
+Vue.use(ZiggyVue, Ziggy)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('multiselect', Multiselect)
 
@@ -77,26 +73,17 @@ Vue.mixin({
                 .toString()
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
         },
-        route: (name, params, absolute) => route(name, params, absolute, Ziggy),
     },
 })
 
 InertiaProgress.init()
 
-const el = document.getElementById('app')
-
-new Vue({
-    store,
-    metaInfo: {
-        titleTemplate: (title) => (title ? `${title} | Creative Streams` : 'Creative Streams'),
+createInertiaApp({
+    resolve: (name) => import(`@/Pages/${name}`),
+    setup({ el, app, props }) {
+        new Vue({
+            store,
+            render: (h) => h(app, props),
+        }).$mount(el)
     },
-    render: (h) =>
-        h(App, {
-            props: {
-                initialPage: JSON.parse(el.dataset.page),
-                resolveComponent: (name) =>
-                    import(`@/Pages/${name}`).then((module) => module.default),
-                resolveErrors: (page) => page.props.errors || {},
-            },
-        }),
-}).$mount(el)
+})
