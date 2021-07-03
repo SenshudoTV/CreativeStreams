@@ -1,54 +1,69 @@
 <template>
-    <b-navbar
-        toggleable="lg"
-        fixed="top"
+    <nav
+        :class="{
+            navbar: true,
+            'fixed-top': true,
+            'navbar-expand-lg': true,
+            'navbar-light': theme.mode === 'dark',
+            'navbar-dark': theme.mode === 'light',
+        }"
         id="navbar"
-        :type="theme.mode === 'light' ? 'dark' : 'light'"
     >
-        <b-container>
-            <b-navbar-brand href="/">
+        <div class="container">
+            <inertia-link :href="route('homepage')" class="navbar-brand">
                 <img
                     :src="Logo"
                     class="logo"
                     alt="Creative Streams"
                     aria-label="Creative Streams brought to you by Senshudo"
                 />
-            </b-navbar-brand>
-            <b-navbar-toggle target="nav-collapse" />
+            </inertia-link>
 
-            <b-collapse id="nav-collapse" is-nav>
-                <b-navbar-nav class="ml-auto">
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <b-button
-                            variant="outline-light"
+                        <a
+                            class="btn btn-outline-light"
                             href="https://github.com/SenshudoTV/CreativeStreams"
                             target="_blank"
                             rel="noopener noreferrer"
                             title="Github"
                         >
                             <font-awesome-icon :icon="['fab', 'github']" />
-                        </b-button>
+                        </a>
                     </li>
                     <li class="nav-item px-1">
-                        <b-button
-                            variant="outline-light"
+                        <button
+                            class="btn btn-outline-light"
                             id="toggleTheme"
                             :title="`Toggle ${theme.mode} theme`"
                             @click.prevent="toggleTheme(false)"
                         >
                             <font-awesome-icon :icon="['fas', theme.icon]" />
-                        </b-button>
+                        </button>
                     </li>
                     <li class="nav-item">
-                        <b-button variant="outline-light" @click="authorize">
+                        <button class="btn btn-outline-light" type="button" @click="authorize">
                             <font-awesome-icon :icon="['fab', 'twitch']" />
                             Sign {{ !isAuthorized ? 'In' : 'Out' }}
-                        </b-button>
+                        </button>
                     </li>
-                </b-navbar-nav>
-            </b-collapse>
-        </b-container>
-    </b-navbar>
+                </ul>
+            </div>
+        </div>
+    </nav>
 </template>
 
 <script>

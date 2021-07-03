@@ -2,7 +2,7 @@
 
 FROM composer:latest as build
 
-FROM php:8.0-fpm-alpine as base
+FROM php:8-fpm-alpine as base
 RUN apk update && apk upgrade
 RUN apk --no-cache add shadow \
                         freetype \

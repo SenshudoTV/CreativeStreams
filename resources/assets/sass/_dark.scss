@@ -3,7 +3,7 @@ $app-dark-medium: rgb(47, 49, 54);
 $app-dark-light: rgb(54, 57, 63);
 $app-dark-font: rgb(255, 255, 255);
 $app-dark-input-shadow: inset 0 1px 2px rgba($app-dark-light, 0.075) !default;
-$app-dark-input-focus-box-shadow: 0 0 0 $custom-select-focus-width $app-dark-light !default;
+$app-dark-input-focus-box-shadow: 0 0 0 $input-focus-width $app-dark-light !default;
 
 .app-dark {
     background-color: $app-dark-medium;
@@ -26,14 +26,13 @@ $app-dark-input-focus-box-shadow: 0 0 0 $custom-select-focus-width $app-dark-lig
         color: $app-dark-font;
         border-color: $app-dark-light;
 
-        @include hover() {
+        &:hover {
             color: $app-dark-font;
             background-color: $app-dark-light;
             border-color: $app-dark-light;
         }
 
-        &:focus,
-        &.focus {
+        &:focus {
             box-shadow: 0 0 0 $btn-focus-width rgba($app-dark-font, 0.5);
         }
 
@@ -70,7 +69,7 @@ $app-dark-input-focus-box-shadow: 0 0 0 $custom-select-focus-width $app-dark-lig
             escape-svg(
                 url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'><path fill='#fff' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>")
             )
-            right $custom-select-padding-x center / 8px 10px no-repeat;
+            right $btn-padding-x center / 8px 10px no-repeat;
         border-color: $app-dark-light;
         @include box-shadow($app-dark-input-shadow);
 

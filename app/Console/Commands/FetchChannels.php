@@ -256,9 +256,9 @@ class FetchChannels extends Command
     protected $requestCount = 0;
 
     /**
-     * Twitch Config File loaded
-     * 
-     * @var boolean
+     * Twitch Config File loaded.
+     *
+     * @var bool
      */
     protected $configLoaded = false;
 

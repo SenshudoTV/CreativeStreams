@@ -29,9 +29,9 @@ class ValidateToken extends Command
     protected $client;
 
     /**
-     * Twitch Config File loaded
-     * 
-     * @var boolean
+     * Twitch Config File loaded.
+     *
+     * @var bool
      */
     protected $configLoaded = false;
 

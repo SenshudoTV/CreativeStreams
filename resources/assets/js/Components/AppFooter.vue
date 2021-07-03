@@ -1,8 +1,8 @@
 <template>
     <footer class="app--footer text-light mt-auto">
-        <b-container>
-            <b-row>
-                <b-col :sm="12" :md="4">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-4">
                     <h4>Company</h4>
                     <ul class="app--footer__links">
                         <li>
@@ -36,8 +36,8 @@
                             </a>
                         </li>
                     </ul>
-                </b-col>
-                <b-col :sm="12" :md="4">
+                </div>
+                <div class="col-sm-12 col-md-4">
                     <h4>Legal</h4>
                     <ul class="app--footer__links">
                         <li>
@@ -71,8 +71,8 @@
                             </a>
                         </li>
                     </ul>
-                </b-col>
-                <b-col :sm="12" :md="4">
+                </div>
+                <div class="col-sm-12 col-md-4">
                     <h4>Social</h4>
                     <ul class="social--icons">
                         <li>
@@ -146,14 +146,14 @@
                             </a>
                         </li>
                     </ul>
-                </b-col>
-            </b-row>
-            <b-row class="app--footer__copyright">
-                <b-col class="text-center">
+                </div>
+            </div>
+            <div class="row app--footer__copyright">
+                <div class="col text-center">
                     <p>&copy; {{ year }} Senshudo Ltd. All Rights Reserved.</p>
-                </b-col>
-            </b-row>
-        </b-container>
+                </div>
+            </div>
+        </div>
     </footer>
 </template>
 
