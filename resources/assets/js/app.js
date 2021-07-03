@@ -3,7 +3,6 @@ import { Ziggy } from '@/ziggy'
 import Vue from 'vue'
 import { createInertiaApp } from '@inertiajs/inertia-vue'
 import { InertiaProgress } from '@inertiajs/progress'
-import { Alert, Button, Carousel, Collapse, Dropdown, Modal, Toast, Tooltip } from 'bootstrap'
 import Multiselect from 'vue-multiselect'
 import moment from 'moment'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -63,16 +62,6 @@ Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('multiselect', Multiselect)
 
 Vue.prototype.moment = moment
-Vue.prototype.bootstrap = {
-    Alert,
-    Button,
-    Carousel,
-    Collapse,
-    Dropdown,
-    Modal,
-    Toast,
-    Tooltip,
-}
 
 Vue.mixin({
     methods: {

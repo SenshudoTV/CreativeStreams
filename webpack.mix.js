@@ -45,6 +45,6 @@ mix.webpackConfig({
     .sass('resources/assets/sass/app.scss', 'css')
     .js('resources/assets/js/app.js', 'js')
     .vue()
-    .extract(['vue', 'moment', 'axios', 'bootstrap'])
+    .extract(['vue', 'moment', 'axios'])
     .version()
     .setPublicPath('public_html')
