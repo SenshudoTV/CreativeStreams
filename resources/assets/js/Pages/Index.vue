@@ -3,10 +3,10 @@
         <Featured :channel="selected" />
         <div class="container">
             <div class="row mb-2" v-if="total > 0" id="filterHeader">
-                <div class="col-sm-12 col-md-6 col-lg-6 pl-0">
+                <div class="col-sm-12 col-md-6 col-lg-6 ps-0">
                     <h2 class="mb-0" id="streamHeading">{{ total }} Streams</h2>
                 </div>
-                <div class="col-sm-12 col-md-6 col-lg-6 pr-0 text-right">
+                <div class="col-sm-12 col-md-6 col-lg-6 pe-0 text-end">
                     <button class="btn btn-primary" type="button" @click.prevent="toggleFilters">
                         <font-awesome-icon :icon="['fas', 'filter']" />
                         Filter
@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="row mb-2" id="filterContainer" v-if="displayFilters">
-                <div class="col-sm-12 col-md-6 col-lg-8 pl-0">
+                <div class="col-sm-12 col-md-6 col-lg-8 ps-0">
                     <multiselect
                         v-model="filters.filter"
                         :options="options.filters"
@@ -27,7 +27,7 @@
                     />
                 </div>
                 <div class="col-sm-12 col-md-4 col-lg-3 px-0">
-                    <select class="form-control" v-model="filters.order">
+                    <select class="form-control custom-select" v-model="filters.order">
                         <option
                             v-for="(option, index) in options.order"
                             :key="index"
@@ -37,12 +37,8 @@
                         </option>
                     </select>
                 </div>
-                <div class="col-sm-12 col-md-2 col-lg-1 pr-0">
-                    <button
-                        class="btn btn-block btn-primary"
-                        type="button"
-                        @click="fetchChannels()"
-                    >
+                <div class="col-sm-12 col-md-2 col-lg-1 pe-0">
+                    <button class="btn btn-primary w-100" type="button" @click="fetchChannels()">
                         <font-awesome-icon :icon="['fas', 'search']" />
                     </button>
                 </div>
@@ -91,6 +87,7 @@
                                         @click.prevent="fetchChannels(page.first, true)"
                                         class="page-link"
                                         aria-link="First Page"
+                                        title="First Page"
                                     >
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
@@ -101,6 +98,7 @@
                                         @click.prevent="fetchChannels(page.current - 1, true)"
                                         class="page-link"
                                         aria-link="Previous Page"
+                                        title="Previous Page"
                                     >
                                         <span aria-hidden="true">&lt;</span>
                                     </a>
@@ -112,7 +110,6 @@
                                         'page-item': true,
                                         active: page.current === p,
                                     }"
-                                    :only="only"
                                     :aria-current="page.current === p ? 'page' : null"
                                 >
                                     <a
@@ -120,6 +117,7 @@
                                         @click.prevent="fetchChannels(p, true)"
                                         class="page-link"
                                         :aria-link="`Page ${p}`"
+                                        :title="`Page ${p}`"
                                     >
                                         {{ p }}
                                     </a>
@@ -133,6 +131,7 @@
                                         @click.prevent="fetchChannels(page.current + 1, true)"
                                         class="page-link"
                                         aria-link="Next Page"
+                                        title="Next Page"
                                     >
                                         <span aria-hidden="true">&gt;</span>
                                     </a>
@@ -146,6 +145,7 @@
                                         @click.prevent="fetchChannels(page.last, true)"
                                         class="page-link"
                                         aria-link="Last Page"
+                                        title="Last Page"
                                     >
                                         <span aria-hidden="true">&raquo;</span>
                                     </a>
