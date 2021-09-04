@@ -9,7 +9,7 @@ grumphp:
             no_update_lock: true
             verbose: false
         npm_script:
-            script: check-js
+            script: prettier
             triggered_by: [js, scss, vue]
             is_run_task: true
             silent: true
