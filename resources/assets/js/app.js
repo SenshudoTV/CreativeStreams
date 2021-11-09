@@ -20,7 +20,8 @@ createInertiaApp({
 
         appInstance.config.globalProperties.moment = moment
 
-        appInstance.use(plugin)
+        appInstance
+            .use(plugin)
             .mixin(appMixins)
             .use(ZiggyVue, Ziggy)
             .component('Link', Link)
