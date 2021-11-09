@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ChannelsCollectionResource;
 use App\Http\Resources\ChannelsResource;
 use App\Models\Channels;
 use App\Models\Tags;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ChannelsController extends Controller
 {
     /**
      * List Live Channels.
      */
-    public function index(Request $request): ChannelsCollectionResource
+    public function index(Request $request): AnonymousResourceCollection
     {
         $query = Channels::where('live', true);
 
@@ -66,7 +66,7 @@ class ChannelsController extends Controller
             $query->orderBy('stream_created', 'ASC');
         }
 
-        return new ChannelsCollectionResource($query->paginate(30));
+        return ChannelsResource::collection($query->paginate(30));
     }
 
     /**

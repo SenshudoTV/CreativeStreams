@@ -6,7 +6,6 @@ module.exports = {
         es6: true,
         node: true,
     },
-    parser: 'vue-eslint-parser',
     parserOptions: {
         parser: '@babel/eslint-parser',
         sourceType: 'module',

@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 
 class ValidateToken extends Command
 {
@@ -22,18 +23,14 @@ class ValidateToken extends Command
     protected $description = 'Validate our Twitch OAuth Token';
 
     /**
-     * Guzzle Client.
-     *
-     * @var GuzzleClient
+     * Http Client.
      */
     protected $client;
 
     /**
      * Twitch Config File loaded.
-     *
-     * @var bool
      */
-    protected $configLoaded = false;
+    protected bool $configLoaded = false;
 
     /**
      * Create a new command instance.
@@ -44,16 +41,12 @@ class ValidateToken extends Command
     {
         parent::__construct();
 
-        if (file_exists(base_path() . ' /twitch.json')) {
-            $env = file_get_contents(base_path() . '/twitch.json');
-            $env = json_decode($env, true);
+        if (File::exists(base_path() . '/twitch.json')) {
+            $env = json_decode(File::get(base_path() . '/twitch.json'));
 
-            $this->client = new GuzzleClient([
-                'base_uri'  => 'https://id.twitch.tv/oauth2/',
-                'headers'   => [
-                    'Authorization' => 'Bearer ' . $env['twitch_token'],
-                ],
-            ]);
+            $this->client = Http::withOptions(['base_uri' => 'https://id.twitch.tv/oauth2/'])
+                ->withToken($env->twitch_token)
+                ->acceptJson();
 
             $this->configLoaded = true;
         }
@@ -67,39 +60,43 @@ class ValidateToken extends Command
     public function handle()
     {
         if ($this->configLoaded) {
-            $validateResponse = $this->client->request('GET', 'validate');
+            $validateResponse = $this->client->get('validate');
 
-            if ($validateResponse->getStatusCode() === 200) {
-                $validateResponseBody = json_decode($validateResponse->getBody()->getContents());
+            if ($validateResponse->successful()) {
+                $validateResponseBody = $validateResponse->object();
 
                 if (! empty($validateResponseBody) && ! empty($validateResponseBody->expires_in)) {
                     if ($validateResponseBody->expires_in <= 86400) {
-                        $tokenResponse = $this->client->post('token', [
-                            'form_params' => [
+                        $tokenResponse = $this->client
+                            ->asForm()
+                            ->withHeaders(['Content-Type' => 'application/x-www-form-urlencoded'])
+                            ->post('token', [
                                 'client_id'     => config('app.twitch.id'),
                                 'client_secret' => config('app.twitch.secret'),
                                 'grant_type'    => 'client_credentials',
-                            ],
-                            'headers' => [
-                                'Content-Type' => 'application/x-www-form-urlencoded',
-                            ],
-                        ]);
+                            ]);
 
-                        if ($tokenResponse->getStatusCode() === 200) {
-                            $tokenResponseBody = json_decode($tokenResponse->getBody()->getContents());
+                        if ($tokenResponse->successful()) {
+                            $tokenResponseBody = $tokenResponse->object();
 
                             if (! empty($tokenResponseBody) && ! empty($tokenResponseBody->access_token)) {
                                 $this->updateEnv([
                                     'twitch_token' => $tokenResponseBody->access_token,
                                 ]);
                             }
+                        } else {
+                            return Command::FAILURE;
                         }
                     }
                 }
+            } else {
+                return Command::FAILURE;
             }
-        }
 
-        return 0;
+            return Command::SUCCESS;
+        } else {
+            return Command::FAILURE;
+        }
     }
 
     /**
