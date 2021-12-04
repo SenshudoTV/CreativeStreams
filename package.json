@@ -2,6 +2,9 @@
     "private": true,
     "browserslist": "> 1%, last 2 versions, Firefox ESR, not dead",
     "author": "Senshudo",
+    "config": {
+        "optimize-autoloader": "true"
+    },
     "scripts": {
         "routes": "php artisan ziggy:generate resources/assets/js/ziggy.js",
         "dev": "npm run routes && npm run development",

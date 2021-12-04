@@ -2,6 +2,9 @@ grumphp:
     ascii:
         failed: ~
         succeeded: ~
+    environment:
+        variables:
+            PHP_CS_FIXER_IGNORE_ENV: "1"
     tasks:
         composer_normalize:
             indent_size: 4
@@ -18,7 +21,3 @@ grumphp:
         phpcsfixer:
             config: .php-cs-fixer.dist.php
             using_cache: false
-        securitychecker_local:
-            lockfile: ./composer.lock
-            format: ~
-            run_always: true
