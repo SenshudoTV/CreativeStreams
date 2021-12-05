@@ -3,10 +3,7 @@
 </template>
 
 <script>
-import Layout from '~/Layout/index'
-
 export default {
     name: 'Index',
-    layout: Layout,
 }
 </script>
