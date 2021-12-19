@@ -23,8 +23,6 @@
 		<meta name="twitter:image" content="https://cdn.creativestreams.tv/images/CS.jpg">
         <meta property="og:type" content="website" />
 		<meta name="twitter:card" content="summary">
-        <link rel="preload" href="{{ asset('/fonts/RB-L-700.woff2') }}" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="{{ asset('/fonts/RB-LE-700.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link href="{{ mix('/css/app.css') }}" rel="stylesheet" />
         <script src="{{ mix('/js/manifest.js') }}" defer type="text/javascript"></script>
         <script src="{{ mix('/js/vendor.js') }}" defer type="text/javascript"></script>

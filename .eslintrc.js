@@ -16,15 +16,24 @@ module.exports = {
     },
     plugins: ['babel', 'prettier', 'promise'],
     rules: {
+        'arrow-body-style': 'off',
         'comma-dangle': ['error', 'always-multiline'],
         'no-console':
             process.env.NODE_ENV === 'production' ? ['error', { allow: ['warn', 'error'] }] : 'off',
         'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
         quotes: ['error', 'single', { avoidEscape: true }],
+        'prettier/prettier': 'error',
+        'prefer-arrow-callback': 'off',
         'vue/component-tags-order': [
             'error',
             {
                 order: ['template', 'script', 'style'],
+            },
+        ],
+        'vue/multi-word-component-names': [
+            'error',
+            {
+                ignores: ['Filters', 'Pagination'],
             },
         ],
         'vue/no-template-target-blank': [

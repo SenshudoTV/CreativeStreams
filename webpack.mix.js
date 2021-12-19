@@ -1,6 +1,7 @@
-const path = require('path');
-const mix = require('laravel-mix');
-const TerserPlugin = require('terser-webpack-plugin');
+const path = require('path')
+const mix = require('laravel-mix')
+const env = require('dotenv-mix')
+const TerserPlugin = require('terser-webpack-plugin')
 
 /*
  |--------------------------------------------------------------------------
@@ -22,11 +23,15 @@ mix.webpackConfig({
             vue$: path.join(__dirname, 'node_modules/vue/dist/vue.esm-bundler.js'),
             '@': path.join(__dirname, 'resources/assets/js'),
         },
+        fallback: {
+            fs: false,
+            os: false,
+        },
     },
     optimization: {
         minimize: mix.inProduction(),
         minimizer: [
-            new TerserPlugin ({
+            new TerserPlugin({
                 extractComments: false,
                 terserOptions: {
                     compress: mix.inProduction(),
@@ -35,16 +40,11 @@ mix.webpackConfig({
         ],
     },
 })
-    .css(
-        'resources/assets/css/app.css',
-        'css',
-        [
-            require('tailwindcss'),
-            require('postcss-import'),
-        ],
-    )
+    .css('resources/assets/css/app.css', 'css', [require('tailwindcss'), require('postcss-import')])
     .js('resources/assets/js/app.js', 'js')
+    .extend('env', env)
+    .env()
     .vue()
     .extract(['vue', 'moment', 'moment-timezone', 'axios'])
     .version()
-    .setPublicPath('public_html');
+    .setPublicPath('public_html')

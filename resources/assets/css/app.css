@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@define-mixin keyframes $name {
+    @-webkit-keyframes $(name) {
+        @mixin-content;
+    }
+    @-moz-keyframes $(name) {
+        @mixin-content;
+    }
+    @-ms-keyframes $(name) {
+        @mixin-content;
+    }
+    @keyframes $(name) {
+        @mixin-content;
+    }
+}
+
+body {
+    @apply dark:bg-gray-600;
+}
+
+.featured {
+    height: 50rem;
+    height: -webkit-calc(100vh - 12rem);
+    height: calc(100vh - 12rem);
+    min-height: 45rem;
+    -webkit-clip-path: polygon(100% 0%, 100% 100%, 50% calc(100% - 6rem), 0 100%, 0 0);
+    clip-path: polygon(100% 0%, 100% 100%, 50% calc(100% - 6rem), 0 100%, 0 0);
+    z-index: 1;
+    @apply mb-2 pt-32 pb-24 relative flex overflow-hidden bg-violet-500 dark:bg-gray-800;
+}
+
+.channelContainer {
+    @apply mt-24 mb-3;
+}
+
+.channelContainer > #channelEmbed {
+    box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14), 0px 4px 18px 3px rgba(0, 0, 0, 0.12);
+    max-width: 900px;
+    @apply bg-white h-auto w-full aspect-[16/9] mx-auto;
+}
+
+.channelContainer > #channelEmbed > iframe {
+    @apply w-full h-full;
+}
+
+#channelActions {
+    max-width: 900px;
+    @apply grid grid-cols-2 gap-x-2 mx-auto;
+}
+
+.fancyAnimationLayerItem {
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-name: parallax-stars;
+    position: absolute;
+    display: block;
+    z-index: 2;
+    opacity: 0;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: cover;
+    background-image: url('./../images/glitch.png');
+}
+
+.footer {
+    -webkit-clip-path: polygon(100% 27%, 100% 100%, 0 100%, 0 27%, 50% 0);
+    clip-path: polygon(100% 27%, 100% 100%, 0 100%, 0 27%, 50% 0);
+    @apply pt-28 bg-violet-500 dark:bg-gray-800;
+}
+
+@mixin keyframes lds-roller {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@mixin keyframes parallax-stars {
+    0% {
+        opacity: 0;
+        -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+        filter: alpha(opacity=0);
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+    50% {
+        opacity: 1;
+        -ms-filter: none;
+        filter: none;
+        -webkit-transform: translate3d(0, -100px, 0);
+        transform: translate3d(0, -100px, 0);
+    }
+    to {
+        opacity: 0;
+        -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=0)';
+        filter: alpha(opacity=0);
+        -webkit-transform: translate3d(0, -200px, 0);
+        transform: translate3d(0, -200px, 0);
+    }
+}
