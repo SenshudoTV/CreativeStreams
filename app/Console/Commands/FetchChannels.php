@@ -269,7 +269,7 @@ class FetchChannels extends Command
 
             $this->client = Http::withOptions(['base_uri' => 'https://api.twitch.tv/helix/'])
                 ->withHeaders([
-                    'Client-ID'     => config('app.twitch.id'),
+                    'Client-ID'     => config('services.twitch.id'),
                     'Authorization' => 'Bearer ' . $env->twitch_token,
                 ])
                 ->acceptJson();
@@ -514,7 +514,7 @@ class FetchChannels extends Command
     /**
      * Find hashtags within the streams title for population.
      *
-     * @param array $title Stream Title
+     * @param string $title Stream Title
      */
     private function populateHashtags(string $title = null): void
     {

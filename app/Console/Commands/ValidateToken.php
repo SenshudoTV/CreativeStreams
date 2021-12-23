@@ -71,8 +71,8 @@ class ValidateToken extends Command
                             ->asForm()
                             ->withHeaders(['Content-Type' => 'application/x-www-form-urlencoded'])
                             ->post('token', [
-                                'client_id'     => config('app.twitch.id'),
-                                'client_secret' => config('app.twitch.secret'),
+                                'client_id'     => config('services.twitch.id'),
+                                'client_secret' => config('services.twitch.secret'),
                                 'grant_type'    => 'client_credentials',
                             ]);
 

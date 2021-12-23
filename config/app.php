@@ -223,9 +223,4 @@ return [
         'Validator'    => Illuminate\Support\Facades\Validator::class,
         'View'         => Illuminate\Support\Facades\View::class,
     ],
-
-    'twitch' => [
-        'id'        => env('TWITCH_ID'),
-        'secret'    => env('TWITCH_SECRET'),
-    ],
 ];
