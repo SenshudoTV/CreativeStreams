@@ -1,4 +1,4 @@
-import { USER_UPDATE, USER_LOGOUT } from '@/Store/Actions/User'
+import { USER_UPDATE, USER_LOGOUT, USER_THEME } from '@/Store/Actions/User'
 import { AUTH_SUCCESS, AUTH_EXPIRED, AUTH_LOGOUT } from '@/Store/Actions/Authentication'
 
 export default {
@@ -7,6 +7,9 @@ export default {
             id: null,
             name: null,
         },
+        theme: localStorage.getItem('appTheme')
+            ? JSON.parse(localStorage.getItem('appTheme'))
+            : null,
     }),
     mutations: {
         [USER_UPDATE]: (state, user) => {
@@ -17,6 +20,9 @@ export default {
                 id: null,
                 name: null,
             }
+        },
+        [USER_THEME]: (state, theme) => {
+            state.theme = theme
         },
     },
     actions: {
@@ -54,8 +60,12 @@ export default {
                 dispatch(AUTH_EXPIRED)
             }
         },
+        [USER_THEME]: ({ commit }, theme) => {
+            commit(USER_THEME, theme)
+        },
     },
     getters: {
-        getUser: (state) => state.user,
+        user: (state) => state.user,
+        theme: (state) => state.theme,
     },
 }

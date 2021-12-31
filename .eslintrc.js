@@ -33,7 +33,7 @@ module.exports = {
         'vue/multi-word-component-names': [
             'error',
             {
-                ignores: ['Filters', 'Pagination'],
+                ignores: ['Avatar', 'Filters', 'Pagination'],
             },
         ],
         'vue/no-template-target-blank': [

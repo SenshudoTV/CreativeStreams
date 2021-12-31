@@ -19,14 +19,6 @@
                     <span id="channelViewers">{{ featuredChannel.viewers }}</span>
                 </div>
                 <div class="text-right">
-                    <button
-                        v-if="isAuthorized"
-                        type="button"
-                        class="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
-                        @click.prevent="handleFollowship"
-                    >
-                        Follow
-                    </button>
                     <a
                         :href="`https://www.twitch.tv/${featuredChannel.slug}`"
                         target="_blank"
@@ -57,7 +49,6 @@ export default {
     data() {
         return {
             animations: [],
-            isFollowing: false,
             EmbedAPi: null,
             featuredChannel: {
                 id: 12826,
@@ -68,7 +59,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['isAuthorized', 'getUser']),
+        ...mapGetters(['isAuthorized', 'user', 'theme']),
     },
     mounted() {
         for (let i = 0; i < 30; i++) {
@@ -105,25 +96,48 @@ export default {
                     }
                 })
                 .then(() => {
+                    let isDarkMode = false
+
+                    if (this.theme !== undefined && this.theme !== null) {
+                        isDarkMode = this.theme.darkMode
+                    }
+
                     this.EmbedAPi = new window.Twitch.Embed('channelEmbed', {
                         width: 900,
                         height: 506,
                         playsinline: true,
                         layout: 'video',
                         channel: this.featuredChannel.slug,
-                        theme: 'dark',
+                        theme: isDarkMode ? 'dark' : 'light',
                         parent: ['www.creativestreams.tv', 'development.creativetsreams.tv'],
+                    })
+
+                    this.EmbedAPi.addEventListener(window.Twitch.Embed.ENDED, () => {
+                        this.streamEnded()
                     })
                 })
         },
-        handleFollowship() {
-            window.twitchAPI
-                .get(`/users/follows?to_id=${this.featuredChannel.id}&from_id=${this.getUser.id}`)
+        streamEnded() {
+            window.axios
+                .get(this.route('channels.random'))
                 .then(({ response: { data } }) => {
-                    console.log(data)
+                    this.featuredChannel = {
+                        id: data.id,
+                        name: data.name,
+                        slug: data.slug,
+                        viewers: data.viewers,
+                    }
                 })
-                .catch((e) => {
-                    console.log(e)
+                .catch(() => {
+                    this.featuredChannel = {
+                        id: 12826,
+                        name: 'Twitch',
+                        slug: 'twitch',
+                        viewers: 0,
+                    }
+                })
+                .then(() => {
+                    this.EmbedAPi.setChannel(this.featuredChannel.slug)
                 })
         },
     },

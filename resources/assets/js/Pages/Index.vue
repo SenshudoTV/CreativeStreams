@@ -12,8 +12,13 @@
                     Well this is awkward, we can't seem to find any streams that are currently live.
                 </p>
             </div>
-            <div v-else>
-                <!-- TODO -->
+            <div v-else class="grid grid-cols-3 gap-4">
+                <ChannelItem
+                    v-for="(channel, index) in channels"
+                    :key="`channel${index}`"
+                    :channel="channel"
+                    :active="channel.id === active?.id"
+                />
             </div>
 
             <Pagination v-if="channels.length > 0 && meta" :meta="meta" @click="changePage" />
@@ -24,16 +29,18 @@
 <script>
 import { mapGetters } from 'vuex'
 import Layout from '@/Layout/index'
+import ChannelItem from '@/Components/ChannelItem'
 import FeaturedChannel from '@/Components/FeaturedChannel'
 import Pagination from '@/Components/Pagination'
 
 export default {
     name: 'PageIndex',
     layout: Layout,
-    components: { FeaturedChannel, Pagination },
+    components: { ChannelItem, FeaturedChannel, Pagination },
     data() {
         return {
             page: 1,
+            active: null,
             filters: {
                 tags: null,
                 order: null,

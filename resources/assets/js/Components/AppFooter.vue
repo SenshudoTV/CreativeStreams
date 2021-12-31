@@ -11,6 +11,7 @@ export default {
     name: 'AppFooter',
     data() {
         const now = new Date()
+
         return {
             year: now.getFullYear(),
         }
