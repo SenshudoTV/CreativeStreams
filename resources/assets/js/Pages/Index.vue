@@ -1,6 +1,6 @@
 <template>
     <div>
-        <FeaturedChannel />
+        <FeaturedChannel :channel="selected" />
         <section class="max-w-7xl mx-auto py-5">
             <Filters @updated="applyFilters" />
             <div
@@ -18,6 +18,7 @@
                     :key="`channel${index}`"
                     :channel="channel"
                     :active="channel.id === active?.id"
+                    @click="handleClick"
                 />
             </div>
 
@@ -45,6 +46,7 @@ export default {
                 tags: null,
                 order: null,
             },
+            selected: null,
         }
     },
     computed: {
@@ -54,11 +56,25 @@ export default {
         this.$store.dispatch('getChannels', { vm: this, page: this.page, filters: this.filters })
     },
     methods: {
+        handleClick(channel) {
+            if (channel !== undefined && channel !== null) {
+                this.selected = channel
+                document.getElementById('channelEmbed').scrollIntoView()
+            }
+        },
         applyFilters(filters) {
-            // TODO
+            if (filters) {
+                // TODO
+            }
         },
         changePage(page) {
-            // TODO
+            this.page = page
+
+            this.$store.dispatch('getChannels', {
+                vm: this,
+                page: this.page,
+                filters: this.filters,
+            })
         },
     },
 }

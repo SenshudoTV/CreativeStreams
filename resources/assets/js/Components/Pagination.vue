@@ -8,7 +8,7 @@
                 @click.prevent="$emit('click', page.previous)"
             >
                 <span class="sr-only">Previous</span>
-                <IconChevronLeft class="w-5 h-5" aria-hidden="true" />
+                <ChevronLeftIcon class="w-5 h-5" aria-hidden="true" />
             </a>
             <a
                 v-for="p in page.range"
@@ -33,15 +33,18 @@
                 @click.prevent="$emit('click', page.next)"
             >
                 <span class="sr-only">Next</span>
-                <IconChevronRight class="w-5 h-5" aria-hidden="true" />
+                <ChevronRightIcon class="w-5 h-5" aria-hidden="true" />
             </a>
         </nav>
     </div>
 </template>
 
 <script>
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid'
+
 export default {
     name: 'Pagination',
+    components: { ChevronLeftIcon, ChevronRightIcon },
     props: {
         meta: {
             type: Object,

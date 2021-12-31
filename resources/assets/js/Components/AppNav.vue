@@ -26,6 +26,7 @@
                         type="button"
                         class="ml-3 p-2 border border-white dark:border-gray-300 shadow-sm font-medium rounded-md text-white dark:text-gray-300 hover:text-black dark:hover:text-black hover:bg-white dark:hover:bg-gray-300 focus:outline-none"
                         @click.prevent="toggleTheme(false)"
+                        :title="isDarkMode ? `Switch to light theme` : `Switch to dark theme`"
                     >
                         <span class="sr-only">Toggle theme</span>
                         <MoonIcon v-if="isDarkMode" class="h-5 w-5" />
@@ -96,6 +97,11 @@ export default {
             if (initialSetup) {
                 if (this.theme !== undefined && this.theme !== null) {
                     this.isDarkMode = this.theme.darkMode
+                } else if (
+                    window.matchMedia &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches
+                ) {
+                    this.isDarkMode = true
                 }
             } else {
                 this.isDarkMode = !this.isDarkMode

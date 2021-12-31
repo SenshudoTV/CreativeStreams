@@ -20,8 +20,7 @@ export default {
             const { data, meta } = await window.axios.get(
                 vm.route('channels.list', {
                     page,
-                    'filter[tag]': filters.tags,
-                    order: filters.order,
+                    filters,
                 }),
             )
 
