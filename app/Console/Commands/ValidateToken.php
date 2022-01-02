@@ -42,9 +42,15 @@ class ValidateToken extends Command
         parent::__construct();
 
         if (File::exists(base_path() . '/twitch.json')) {
-            $env = json_decode(File::get(base_path() . '/twitch.json'));
+            $env     = json_decode(File::get(base_path() . '/twitch.json'));
+            $name    = config('app.name');
+            $url     = 'https://www.creativestreams.tv';
+            $email   = config('app.contact');
+            $version = config('app.version');
+            $agent   = "{$name}/{$version} - {$url} | {$email}";
 
             $this->client = Http::withOptions(['base_uri' => 'https://id.twitch.tv/oauth2/'])
+                ->withUserAgent($agent)
                 ->withToken($env->twitch_token)
                 ->acceptJson();
 
@@ -107,8 +113,7 @@ class ValidateToken extends Command
     protected function updateEnv($data = []): bool
     {
         if (! empty($data)) {
-            $env = file_get_contents(base_path() . '/twitch.json');
-            $env = json_decode($env, true);
+            $env = json_decode(File::get(base_path() . '/twitch.json'), true);
 
             foreach ($data as $key => $value) {
                 foreach ($env as $env_key => $env_value) {

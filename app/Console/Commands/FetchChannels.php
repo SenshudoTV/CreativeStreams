@@ -35,135 +35,7 @@ class FetchChannels extends Command
     /**
      * Blacklisted Tags.
      */
-    protected array $blacklist = [
-        'affiliate',
-        'affiliated',
-        'afk',
-        'alertcoronavi',
-        'anal',
-        'anus',
-        'arse',
-        'ass',
-        'balls',
-        'ballsack',
-        'bastard',
-        'bestlightsontwitch',
-        'biatch',
-        'bitch',
-        'bloody',
-        'blowjob',
-        'bollock',
-        'bollok',
-        'boner',
-        'boob',
-        'bugger',
-        'bum',
-        'butt',
-        'buttplug',
-        'cancer',
-        'clitoris',
-        'clubquarantine',
-        'cmon',
-        'cock',
-        'coon',
-        'cornavirus',
-        'coronaparty',
-        'covid',
-        'covid19',
-        'crap',
-        'cunt',
-        'damn',
-        'dick',
-        'dildo',
-        'dyke',
-        'fag',
-        'faggot',
-        'feck',
-        'felching',
-        'fellate',
-        'fellatio',
-        'flange',
-        'fuck',
-        'fucking',
-        'fudgepacker',
-        'gay',
-        'gaystreamer',
-        'goddamn',
-        'handsupwillneverdie',
-        'hell',
-        'hentai',
-        'homo',
-        'jerk',
-        'jizz',
-        'knobend',
-        'labia',
-        'lesbian',
-        'live',
-        'lmao',
-        'lmfao',
-        'mature',
-        'muff',
-        'nigga',
-        'nigger',
-        'nude',
-        'omg',
-        'pathtoaffilate',
-        'partner',
-        'penis',
-        'piss',
-        'poop',
-        'porn',
-        'poundsign',
-        'prick',
-        'pube',
-        'pussy',
-        'quaranstream',
-        'quarantine',
-        'quarantineandchill',
-        'quarantunes',
-        'quedateencasa',
-        'queer',
-        'queerbeat',
-        'raidparty',
-        'razerstreamer',
-        'restezchezvous',
-        'scrotum',
-        'sex',
-        'sh1t',
-        'shit',
-        'slut',
-        'smallstreamer',
-        'smallstreamers',
-        'smegma',
-        'spunk',
-        'streamers',
-        'streambuddys',
-        'streamraiders',
-        'supportistkeinmord',
-        'testy',
-        'thehateisreal',
-        'tit',
-        'tosser',
-        'trans',
-        'translifeline',
-        'transtagnow',
-        'turd',
-        'twat',
-        'twitch',
-        'twitchaffiliate',
-        'twitchde',
-        'twitchdj',
-        'twitchfam',
-        'twitchkittens',
-        'twitchtv',
-        'vagina',
-        'wank',
-        'washhands',
-        'whore',
-        'wow',
-        'wtf',
-        'xoxo',
-    ];
+    protected array $blacklist = [];
 
     /**
      * Global Tags.
@@ -264,17 +136,28 @@ class FetchChannels extends Command
     {
         parent::__construct();
 
-        if (File::exists(base_path() . '/twitch.json')) {
-            $env = json_decode(File::get(base_path() . '/twitch.json'));
+        $twitchJson    = base_path() . '/twitch.json';
+        $blacklistJson = base_path() . '/blacklisted_words.json';
+
+        if (File::exists($twitchJson)) {
+            $env     = json_decode(File::get($twitchJson));
+            $name    = config('app.name');
+            $url     = 'https://www.creativestreams.tv';
+            $email   = config('app.contact');
+            $version = config('app.version');
+            $agent   = "{$name}/{$version} - {$url} | {$email}";
 
             $this->client = Http::withOptions(['base_uri' => 'https://api.twitch.tv/helix/'])
-                ->withHeaders([
-                    'Client-ID'     => config('services.twitch.id'),
-                    'Authorization' => 'Bearer ' . $env->twitch_token,
-                ])
+                ->withUserAgent($agent)
+                ->withHeaders(['Client-ID' => config('services.twitch.id')])
+                ->withToken($env->twitch_token)
                 ->acceptJson();
 
             $this->configLoaded = true;
+        }
+
+        if (File::exists($blacklistJson)) {
+            $this->blacklist = json_decode(File::get($blacklistJson), true);
         }
     }
 
@@ -360,7 +243,10 @@ class FetchChannels extends Command
                             if (! empty($userResponseBody->data[0]->login)) {
                                 $user = [
                                     'slug'      => $userResponseBody->data[0]->login,
-                                    'partner'   => (! empty($userResponseBody->data[0]->broadcaster_type) && $userResponseBody->data[0]->broadcaster_type == 'partner') ? true : false,
+                                    'partner'   => (
+                                        ! empty($userResponseBody->data[0]->broadcaster_type)
+                                        && $userResponseBody->data[0]->broadcaster_type == 'partner'
+                                    ) ? true : false,
                                     'avatar'    => $userResponseBody->data[0]->profile_image_url,
                                     'views'     => $userResponseBody->data[0]->view_count,
                                 ];

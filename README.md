@@ -17,14 +17,3 @@ All we get from this really is the knowledge that we’re helping you folks out.
 All we hope, is that maybe you’ll take a peek at our main site over at [Senshudo](https://www.senshudo.tv) where we do gaming news & reviews as well as give you guys some analytics around your streams if you sign up (it’s pretty neat, promise!). You don’t have to, it’d be lovely if you did, but don’t feel obliged.
 
 This did cost us a little to throw this together for you, if you were feeling especially generous, you’re welcome to throw a few pennies our way. Our servers cost us quite a bit for all the projects we run (a couple thousand a year) which we pay ourselves. Again, don’t feel obliged, we did this to help out however we can. Having our overheads for doing it covered would be nice, but not necessary.
-
-### Development
-
-**Note:** The following files are used for local development purposes only:
-* charts/
-* build.sh
-* db_seed.sh
-* deploy.sh
-* Dockerfile
-* kube_exec.sh
-* spindown.sh
