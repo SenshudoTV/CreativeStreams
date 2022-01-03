@@ -1,326 +1,155 @@
 <template>
     <div>
-        <Featured :channel="selected" />
-        <div class="container">
-            <div class="row mb-2" v-if="total > 0" id="filterHeader">
-                <div class="col-sm-12 col-md-6 col-lg-6 ps-0">
-                    <h2 class="mb-0" id="streamHeading">{{ total }} Streams</h2>
-                </div>
-                <div class="col-sm-12 col-md-6 col-lg-6 pe-0 text-end">
-                    <button class="btn btn-primary" type="button" @click.prevent="toggleFilters">
-                        <font-awesome-icon :icon="['fas', 'filter']" />
-                        Filter
-                    </button>
-                </div>
+        <FeaturedChannel :channel="selected" />
+        <section class="max-w-7xl mx-auto py-5 px-2 sm:px-6 lg:px-8" id="channels">
+            <div v-if="loading" class="text-center text-black dark:text-white mb-5">
+                <LoadingIcon class="animate-spin block mx-auto w-20 h-20 mb-3" />
+                <h2>Loading Streams...</h2>
             </div>
-            <div class="row mb-2" id="filterContainer" v-if="displayFilters">
-                <div class="col-sm-12 col-md-6 col-lg-8 ps-0">
-                    <multiselect
-                        v-model="filters.filter"
-                        :options="options.filters"
-                        :searchable="true"
-                        :allow-empty="true"
-                        :multiple="true"
-                        placeholder="Select A Category, Tag or Hashtag..."
-                        label="tag"
-                        track-by="id"
-                    />
-                </div>
-                <div class="col-sm-12 col-md-4 col-lg-3 px-0">
-                    <select class="form-control custom-select" v-model="filters.order">
-                        <option
-                            v-for="(option, index) in options.order"
-                            :key="index"
-                            :value="option.value"
+            <div
+                v-else-if="channels.length <= 0"
+                class="rounded-md bg-red-50 p-4 text-center text-sm text-red-700"
+            >
+                <h1 class="font-medium text-red-800">No Channels Live</h1>
+                <p>
+                    Well this is awkward, we can't seem to find any streams that are currently live.
+                </p>
+            </div>
+            <template v-else>
+                <div class="grid grid-cols-2 mb-3">
+                    <div class="text-black dark:text-white font-medium">
+                        {{ meta.total }} Streams
+                    </div>
+                    <div class="place-self-end">
+                        <button
+                            type="button"
+                            class="px-2 py-2 rounded shadow-sm border border-violet-300 bg-violet-500 text-sm font-medium text-white hover:bg-violet-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+                            @click.prevent="showFilters = !showFilters"
                         >
-                            {{ option.text }}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm-12 col-md-2 col-lg-1 pe-0">
-                    <button class="btn btn-primary w-100" type="button" @click="fetchChannels()">
-                        <font-awesome-icon :icon="['fas', 'search']" />
-                    </button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col loading text-center" v-if="loading">
-                    <div class="lds-roller mb-2">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                            {{ showFilters ? 'Hide Filters' : 'Show Filters' }}
+                        </button>
                     </div>
-                    <p>Loading Streams...</p>
-                </div>
-                <div class="col" v-else-if="error">
-                    <div class="alert alert-danger text-center flex-fill">
-                        {{ errorMessage }}
-                    </div>
-                </div>
-                <template v-else>
-                    <Channel
-                        v-for="channel in channels"
-                        :key="`channel${channel.id}`"
-                        :active="selected !== undefined ? selected.id === channel.id : false"
-                        :id="channel.id"
-                        :name="channel.name"
-                        :slug="channel.slug"
-                        :title="channel.title"
-                        :category="channel.category"
-                        :viewers="channel.viewers"
-                        :partner="channel.partner"
-                        :avatarSRC="channel.avatar"
-                        :thumbnailSRC="channel.thumbnail"
-                        @click="handleClick"
+                    <Filters
+                        class="col-span-2"
+                        :filters="filters"
+                        :show="showFilters"
+                        @apply="applyFilters"
+                        @clear="clearFilters"
                     />
-                    <div class="col-12" v-if="meta.last_page > 1">
-                        <nav aria-label="Page Navigation">
-                            <ul class="pagination my-3 justify-content-center">
-                                <li class="page-item" v-if="page.current > page.first">
-                                    <a
-                                        href="#"
-                                        @click.prevent="fetchChannels(page.first, true)"
-                                        class="page-link"
-                                        aria-link="First Page"
-                                        title="First Page"
-                                    >
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                <li class="page-item" v-if="page.current > 1">
-                                    <a
-                                        href="#"
-                                        @click.prevent="fetchChannels(page.current - 1, true)"
-                                        class="page-link"
-                                        aria-link="Previous Page"
-                                        title="Previous Page"
-                                    >
-                                        <span aria-hidden="true">&lt;</span>
-                                    </a>
-                                </li>
-                                <li
-                                    v-for="p in page.range"
-                                    :key="`page${p}`"
-                                    :class="{
-                                        'page-item': true,
-                                        active: page.current === p,
-                                    }"
-                                    :aria-current="page.current === p ? 'page' : null"
-                                >
-                                    <a
-                                        href="#"
-                                        @click.prevent="fetchChannels(p, true)"
-                                        class="page-link"
-                                        :aria-link="`Page ${p}`"
-                                        :title="`Page ${p}`"
-                                    >
-                                        {{ p }}
-                                    </a>
-                                </li>
-                                <li
-                                    class="page-item"
-                                    v-if="page.current >= 1 && page.current < page.last"
-                                >
-                                    <a
-                                        href="#"
-                                        @click.prevent="fetchChannels(page.current + 1, true)"
-                                        class="page-link"
-                                        aria-link="Next Page"
-                                        title="Next Page"
-                                    >
-                                        <span aria-hidden="true">&gt;</span>
-                                    </a>
-                                </li>
-                                <li
-                                    class="page-item"
-                                    v-if="page.current !== page.last && page.next < page.last"
-                                >
-                                    <a
-                                        href="#"
-                                        @click.prevent="fetchChannels(page.last, true)"
-                                        class="page-link"
-                                        aria-link="Last Page"
-                                        title="Last Page"
-                                    >
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                </template>
-            </div>
-        </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <ChannelItem
+                        v-for="(channel, index) in channels"
+                        :key="`channel${index}`"
+                        :channel="channel"
+                        :active="channel.id === selected?.id"
+                        @change="channelChannel"
+                    />
+                </div>
+            </template>
+            <Pagination v-if="channels.length > 0 && meta" :meta="meta" @page="changePage" />
+        </section>
     </div>
 </template>
 
 <script>
-import Layout from '@/Shared/Layout'
-import Featured from '@/Components/Featured'
-import Channel from '@/Components/Channel'
+import { mapGetters } from 'vuex'
+import Layout from '@/Layout/index'
+import ChannelItem from '@/Components/ChannelItem'
+import FeaturedChannel from '@/Components/FeaturedChannel'
+import Filters from '@/Components/Filters'
+import Pagination from '@/Components/Pagination'
+import LoadingIcon from '@/Icons/LoadingIcon'
 
 export default {
-    name: 'Index',
+    name: 'PageIndex',
     layout: Layout,
-    components: {
-        Featured,
-        Channel,
-    },
+    components: { ChannelItem, FeaturedChannel, Filters, Pagination, LoadingIcon },
     data() {
         return {
-            loading: true,
-            error: false,
-            errorMessage: 'Failed to fetch streams.',
-            displayFilters: false,
+            page: 1,
+            showFilters: false,
             filters: {
-                filter: [],
-                order: 'created-asc',
+                tags: null,
+                sort: null,
+                direction: null,
             },
-            options: {
-                filters: [],
-                order: [
-                    { value: 'viewers-desc', text: 'Viewers (High to Low)' },
-                    { value: 'viewers-asc', text: 'Viewers (Low to High)' },
-                    { value: 'created-desc', text: 'Broadcast Time (Longest)' },
-                    { value: 'created-asc', text: 'Broadcast Time (Recently Started)' },
-                ],
-            },
-            total: 0,
-            selected: undefined,
-            channels: [],
-            meta: [],
-            range: 15,
-            page: {
-                first: 1,
-                previous: null,
-                current: 1,
-                next: null,
-                last: null,
-                min: 0,
-                max: 0,
-                range: [],
-            },
+            selected: null,
         }
     },
+    computed: {
+        ...mapGetters(['loading', 'channels', 'meta']),
+    },
     mounted() {
-        this.fetchChannels()
-        this.fetchFilters()
+        this.$store.dispatch('getChannels', { vm: this, page: this.page, filters: this.filters })
     },
     methods: {
-        handleClick: function (channel) {
+        channelChannel(channel) {
             if (channel !== undefined && channel !== null) {
                 this.selected = channel
-
                 document.getElementById('channelEmbed').scrollIntoView()
             }
         },
-        fetchChannels: function (page = 1, pagination = false) {
-            this.loading = true
+        applyFilters(filters) {
+            if (filters) {
+                let tags = null
 
-            let tags = null
+                if (filters?.tags) {
+                    this.filters.tags = filters.tags
 
-            if (pagination) {
-                document.getElementById('streamHeading').scrollIntoView()
+                    this.filters.tags.forEach((tag) => {
+                        if (tags === null) {
+                            tags = tag.id + ','
+                        } else {
+                            tags += tag.id + ','
+                        }
+                    })
+
+                    if (tags !== null) {
+                        tags = tags.replace(/,\s*$/, '')
+                    }
+                } else {
+                    this.filters.tags = null
+                    tags = null
+                }
+
+                if (filters?.sort) {
+                    const split = filters.sort.split('-')
+
+                    this.filters.sort = split[0]
+                    this.filters.direction = split[1]
+                } else {
+                    this.filters.sort = null
+                    this.filters.direction = null
+                }
+
+                this.$store.dispatch('getChannels', {
+                    vm: this,
+                    page: 1,
+                    filters: { ...this.filters, tags: tags },
+                })
+            }
+        },
+        clearFilters() {
+            this.page = 1
+            this.filters = {
+                tags: null,
+                sort: null,
+                direction: null,
             }
 
-            this.filters.filter.forEach((element) => {
-                if (tags === null) {
-                    tags = element.id + ','
-                } else {
-                    tags += element.id + ','
-                }
+            this.$store.dispatch('getChannels', { vm: this, page: 1 })
+        },
+        changePage(page) {
+            this.page = page
+
+            this.$store.dispatch('getChannels', {
+                vm: this,
+                page: this.page,
+                filters: this.filters,
             })
 
-            if (tags !== null) {
-                tags = tags.replace(/,\s*$/, '')
-            }
-
-            window.axios
-                .get(
-                    this.route('channels.list', {
-                        page: page,
-                        'filter[tag]': tags,
-                        order: this.filters.order,
-                    }),
-                )
-                .then((response) => {
-                    this.loading = false
-                    this.error = false
-                    this.channels = response.data.data
-                    this.meta = response.data.meta
-                    this.total = response.data.meta.total
-                    this.calcPageRange()
-
-                    if (this.total === 0) {
-                        this.error = true
-                        this.errorMessage =
-                            this.filters.filter.length > 0
-                                ? // eslint-disable-next-line quotes
-                                  "Well this is awkward, we can't seem to find any streams that match your search filters"
-                                : // eslint-disable-next-line quotes
-                                  "Well this is awkward, we can't seem to find any streams that are currently live."
-                    }
-                })
-                .catch(() => {
-                    this.error = true
-                    this.errorMessage = 'Failed to fetch streams.'
-                    this.loading = false
-                })
-        },
-        fetchFilters: function () {
-            window.axios
-                .get(this.route('tags.list'))
-                .then((response) => {
-                    this.options.filters = response.data.data
-                })
-                .catch(() => {})
-        },
-        toggleFilters: function () {
-            this.displayFilters = !this.displayFilters
-        },
-        calcPageRange: function () {
-            let previousPage = this.meta.current_page - 1
-            let nextPage = this.meta.current_page + 1
-            let maxPagesBeforeCurrentPage = Math.floor(this.range / 2)
-            let maxPagesAfterCurrentPage = Math.floor(this.range / 2) - 1
-
-            if (previousPage < 1) {
-                previousPage = null
-            }
-
-            if (nextPage > this.meta.last_page) {
-                nextPage = null
-            }
-
-            this.page.current = this.meta.current_page
-            this.page.previous = previousPage
-            this.page.next = nextPage
-            this.page.last = this.meta.last_page
-
-            if (this.page.last <= this.range) {
-                this.page.min = 1
-                this.page.max = this.page.last
-            } else {
-                if (this.page.current <= maxPagesBeforeCurrentPage) {
-                    this.page.min = 1
-                    this.page.max = this.range
-                } else if (this.page.current + maxPagesAfterCurrentPage >= this.page.last) {
-                    this.page.min = this.page.last - this.range + 1
-                    this.page.max = this.page.last
-                } else {
-                    this.page.min = this.page.current - maxPagesBeforeCurrentPage
-                    this.page.max = this.page.current + maxPagesAfterCurrentPage
-                }
-            }
-
-            this.page.range = Array.from(Array(this.page.max + 1 - this.page.min).keys()).map(
-                (i) => this.page.min + i,
-            )
+            document.getElementById('channels').scrollIntoView()
         },
     },
 }

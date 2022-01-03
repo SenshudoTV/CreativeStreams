@@ -2,23 +2,15 @@ grumphp:
     ascii:
         failed: ~
         succeeded: ~
+    environment:
+        variables:
+            PHP_CS_FIXER_IGNORE_ENV: "1"
     tasks:
         composer_normalize:
             indent_size: 4
             indent_style: "space"
             no_update_lock: true
             verbose: false
-        npm_script:
-            script: check-js
-            triggered_by: [js, scss, vue]
-            is_run_task: true
-            silent: true
-            metadata:
-                label: prettier
         phpcsfixer:
             config: .php-cs-fixer.dist.php
             using_cache: false
-        securitychecker_local:
-            lockfile: ./composer.lock
-            format: ~
-            run_always: true

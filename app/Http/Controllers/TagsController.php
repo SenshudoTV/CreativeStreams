@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TagsCollectionResource;
+use App\Http\Resources\TagsResource;
 use App\Models\Tags;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TagsController extends Controller
 {
@@ -12,9 +14,9 @@ class TagsController extends Controller
      *
      * @return TagsCollectionResource
      */
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        return new TagsCollectionResource(
+        return TagsResource::collection(
             Tags::where('is_blacklisted', false)
                 ->where('count', '>', 0)
                 ->orderBy('tag', 'ASC')->get()

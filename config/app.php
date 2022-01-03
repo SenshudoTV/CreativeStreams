@@ -16,6 +16,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | This value determines the "version" your application is.
+    |
+    */
+
+    'version' => '2.0.0',
+
+    'contact' => env('APP_CONTACT', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
@@ -222,11 +235,5 @@ return [
         'URL'          => Illuminate\Support\Facades\URL::class,
         'Validator'    => Illuminate\Support\Facades\Validator::class,
         'View'         => Illuminate\Support\Facades\View::class,
-    ],
-
-    'twitch' => [
-        'id'        => env('TWITCH_ID'),
-        'secret'    => env('TWITCH_SECRET'),
-        'token'     => env('TWITCH_TOKEN'),
     ],
 ];

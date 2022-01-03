@@ -6,7 +6,6 @@ module.exports = {
         es6: true,
         node: true,
     },
-    parser: 'vue-eslint-parser',
     parserOptions: {
         parser: '@babel/eslint-parser',
         sourceType: 'module',
@@ -17,15 +16,24 @@ module.exports = {
     },
     plugins: ['babel', 'prettier', 'promise'],
     rules: {
+        'arrow-body-style': 'off',
         'comma-dangle': ['error', 'always-multiline'],
         'no-console':
             process.env.NODE_ENV === 'production' ? ['error', { allow: ['warn', 'error'] }] : 'off',
         'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
         quotes: ['error', 'single', { avoidEscape: true }],
+        'prettier/prettier': 'error',
+        'prefer-arrow-callback': 'off',
         'vue/component-tags-order': [
             'error',
             {
                 order: ['template', 'script', 'style'],
+            },
+        ],
+        'vue/multi-word-component-names': [
+            'error',
+            {
+                ignores: ['Avatar', 'Filters', 'Pagination'],
             },
         ],
         'vue/no-template-target-blank': [
@@ -39,10 +47,8 @@ module.exports = {
     globals: {
         _: 'readable',
         axios: 'readable',
-        moment: 'readable',
         route: 'readable',
         Twitch: 'readable',
-        twitchAPI: 'readable',
         Vue: 'readable',
     },
 }

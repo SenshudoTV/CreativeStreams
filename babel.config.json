@@ -4,10 +4,7 @@
         "@vue/babel-preset-jsx"
     ],
     "plugins": [
-        "@babel/plugin-proposal-class-properties",
-        "@babel/plugin-proposal-object-rest-spread",
-        "@babel/plugin-syntax-dynamic-import",
-        "@babel/plugin-transform-runtime",
-        "transform-vue-jsx"
+        "@babel/plugin-syntax-jsx",
+        "@babel/plugin-transform-classes"
     ]
 }

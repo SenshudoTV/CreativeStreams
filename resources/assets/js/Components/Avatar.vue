@@ -13,7 +13,12 @@
                 :xlink:href="src"
                 :style="`height: ${height}px; width: ${width}px;`"
             ></image>
-            <circle class="avatar-outline" :cx="radius" :cy="radius" :r="radius"></circle>
+            <circle
+                class="fill-transparent stroke-2 stroke-black/50"
+                :cx="radius"
+                :cy="radius"
+                :r="radius"
+            ></circle>
         </g>
     </svg>
 </template>

@@ -1,6 +1,5 @@
 const path = require('path')
 const mix = require('laravel-mix')
-const ESLintPlugin = require('eslint-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
 /*
@@ -20,15 +19,18 @@ mix.webpackConfig({
         extensions: ['.js', '.jsx', '.vue'],
         alias: {
             'ziggy-js': path.join(__dirname, 'vendor/tightenco/ziggy/dist/vue.m.js'),
-            vue$: path.join(__dirname, 'node_modules/vue/dist/vue.runtime.esm.js'),
+            vue$: path.join(__dirname, 'node_modules/vue/dist/vue.esm-bundler.js'),
             '@': path.join(__dirname, 'resources/assets/js'),
+        },
+        fallback: {
+            fs: false,
+            os: false,
         },
     },
     optimization: {
         minimize: mix.inProduction(),
         minimizer: [
-            new TerserPlugin ({
-                parallel: false,
+            new TerserPlugin({
                 extractComments: false,
                 terserOptions: {
                     compress: mix.inProduction(),
@@ -36,15 +38,10 @@ mix.webpackConfig({
             }),
         ],
     },
-    plugins: [
-        new ESLintPlugin({
-            extensions: ['.js', '.jsx', '.vue'],
-        }),
-    ],
 })
-    .sass('resources/assets/sass/app.scss', 'css')
+    .css('resources/assets/css/app.css', 'css', [require('tailwindcss'), require('postcss-import')])
     .js('resources/assets/js/app.js', 'js')
     .vue()
-    .extract(['vue', 'moment', 'axios'])
+    .extract(['vue', 'axios'])
     .version()
     .setPublicPath('public_html')

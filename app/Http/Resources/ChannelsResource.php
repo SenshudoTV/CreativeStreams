@@ -28,7 +28,6 @@ class ChannelsResource extends JsonResource
             509673  => 'Makers & Crafting',
         ];
 
-        $tags = json_decode($this->tags);
         $tags = (! empty($tags)) ? $tags : [];
 
         return [
@@ -36,7 +35,7 @@ class ChannelsResource extends JsonResource
             'name'      => $this->name,
             'slug'      => $this->slug,
             'live'      => $this->live,
-            'title'     => $this->title,
+            'title'     => empty($this->title) || $this->title === ' ' ? 'No title set' : $this->title,
             'category'  => $category[$this->game_id],
             'avatar'    => $this->avatar,
             'thumbnail' => $this->thumbnail,

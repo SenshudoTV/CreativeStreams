@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\QueryBuilders\ChannelsQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Kyslik\ColumnSortable\Sortable;
 
 class Channels extends Model
 {
+    use Sortable;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -40,13 +44,23 @@ class Channels extends Model
      * @var array
      */
     protected $casts = [
-        'stream_create' => 'datetime',
-        'live'          => 'boolean',
-        'views'         => 'integer',
-        'viewers'       => 'integer',
-        'partner'       => 'boolean',
-        'tags'          => 'array',
+        'stream_created' => 'datetime',
+        'live'           => 'boolean',
+        'views'          => 'integer',
+        'viewers'        => 'integer',
+        'partner'        => 'boolean',
+        'tags'           => 'array',
     ];
+
+    public $sortable = [
+        'viewers',
+        'stream_created',
+    ];
+
+    public function newEloquentBuilder($query)
+    {
+        return new ChannelsQueryBuilder($query);
+    }
 
     public static function setAllOffline()
     {

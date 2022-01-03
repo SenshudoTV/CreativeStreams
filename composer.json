@@ -1,30 +1,31 @@
 {
     "name": "senshudo/creativestreams",
-    "type": "project",
     "description": "CreativeStreams Website",
+    "license": "MIT",
+    "type": "project",
     "keywords": [
         "framework",
         "laravel"
     ],
-    "license": "MIT",
     "require": {
         "php": "^8.0",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "inertiajs/inertia-laravel": "^0.4",
-        "laravel/framework": "^8.12",
+        "kyslik/column-sortable": "^6.4",
+        "laravel/framework": "^8.75",
         "laravel/tinker": "^2.5",
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.5.1",
-        "barryvdh/laravel-ide-helper": "^2.8.1",
+        "barryvdh/laravel-debugbar": "^3.6.4",
+        "barryvdh/laravel-ide-helper": "^2.10.0",
         "codedungeon/phpunit-result-printer": "^0.30.0",
         "ergebnis/composer-normalize": "^2.11.0",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
-        "friendsofphp/php-cs-fixer": "^3.0.0",
+        "friendsofphp/php-cs-fixer": "^3.4",
         "laravel/sail": "^1.0.1",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.0",
@@ -32,16 +33,8 @@
         "phpunit/phpunit": "^9.3.3",
         "squizlabs/php_codesniffer": "^3.5.8"
     },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
-    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "App\\": "app/",
@@ -54,8 +47,21 @@
             "Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "ergebnis/composer-normalize": true,
+            "phpro/grumphp": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
     "scripts": {
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",

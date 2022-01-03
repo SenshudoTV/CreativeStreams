@@ -1,17 +1,11 @@
-import 'es6-promise/auto'
-import Vue from 'vue'
-import Vuex from 'vuex'
-import authentication from '@/Store/Modules/Authentication'
-import user from '@/Store/Modules/User'
+import { createStore } from 'vuex'
+import Channels from '@/Store/Modules/Channels'
+import User from '@/Store/Modules/User'
 
-Vue.use(Vuex)
-
-const debug = process.env.NODE_ENV !== 'production'
-
-export default new Vuex.Store({
+export const Store = createStore({
     modules: {
-        authentication,
-        user,
+        Channels,
+        User,
     },
-    strict: debug,
+    strict: process.env.NODE_ENV !== 'production',
 })

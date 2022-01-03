@@ -5,9 +5,10 @@ namespace App\Console\Commands;
 use App\Models\Channels;
 use App\Models\Tags;
 use Carbon\Carbon;
-use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class FetchChannels extends Command
@@ -27,153 +28,19 @@ class FetchChannels extends Command
     protected $description = 'Fetch all live creative channels';
 
     /**
-     * Guzzle Client.
-     *
-     * @var GuzzleClient
+     * Http Facade.
      */
     protected $client;
 
     /**
      * Blacklisted Tags.
-     *
-     * @var array
      */
-    protected $blacklist = [
-        'affiliate',
-        'affiliated',
-        'afk',
-        'alertcoronavi',
-        'anal',
-        'anus',
-        'arse',
-        'ass',
-        'balls',
-        'ballsack',
-        'bastard',
-        'bestlightsontwitch',
-        'biatch',
-        'bitch',
-        'bloody',
-        'blowjob',
-        'bollock',
-        'bollok',
-        'boner',
-        'boob',
-        'bugger',
-        'bum',
-        'butt',
-        'buttplug',
-        'cancer',
-        'clitoris',
-        'clubquarantine',
-        'cmon',
-        'cock',
-        'coon',
-        'cornavirus',
-        'coronaparty',
-        'covid',
-        'covid19',
-        'crap',
-        'cunt',
-        'damn',
-        'dick',
-        'dildo',
-        'dyke',
-        'fag',
-        'faggot',
-        'feck',
-        'felching',
-        'fellate',
-        'fellatio',
-        'flange',
-        'fuck',
-        'fucking',
-        'fudgepacker',
-        'gay',
-        'gaystreamer',
-        'goddamn',
-        'handsupwillneverdie',
-        'hell',
-        'hentai',
-        'homo',
-        'jerk',
-        'jizz',
-        'knobend',
-        'labia',
-        'lesbian',
-        'live',
-        'lmao',
-        'lmfao',
-        'mature',
-        'muff',
-        'nigga',
-        'nigger',
-        'nude',
-        'omg',
-        'pathtoaffilate',
-        'partner',
-        'penis',
-        'piss',
-        'poop',
-        'porn',
-        'poundsign',
-        'prick',
-        'pube',
-        'pussy',
-        'quaranstream',
-        'quarantine',
-        'quarantineandchill',
-        'quarantunes',
-        'quedateencasa',
-        'queer',
-        'queerbeat',
-        'raidparty',
-        'razerstreamer',
-        'restezchezvous',
-        'scrotum',
-        'sex',
-        'sh1t',
-        'shit',
-        'slut',
-        'smallstreamer',
-        'smallstreamers',
-        'smegma',
-        'spunk',
-        'streamers',
-        'streambuddys',
-        'streamraiders',
-        'supportistkeinmord',
-        'testy',
-        'thehateisreal',
-        'tit',
-        'tosser',
-        'trans',
-        'translifeline',
-        'transtagnow',
-        'turd',
-        'twat',
-        'twitch',
-        'twitchaffiliate',
-        'twitchde',
-        'twitchdj',
-        'twitchfam',
-        'twitchkittens',
-        'twitchtv',
-        'vagina',
-        'wank',
-        'washhands',
-        'whore',
-        'wow',
-        'wtf',
-        'xoxo',
-    ];
+    protected array $blacklist = [];
 
     /**
      * Global Tags.
-     *
-     * @var array
      */
-    protected $tags = [
+    protected array $tags = [
         [
             'tag_id'        => '509660',
             'tag'           => 'Art',
@@ -250,17 +117,15 @@ class FetchChannels extends Command
 
     /**
      * Total Requests Made.
-     *
-     * @var int
      */
-    protected $requestCount = 0;
+    protected int $requestCount = 0;
 
     /**
      * Twitch Config File loaded.
-     *
-     * @var bool
      */
-    protected $configLoaded = false;
+    protected bool $configLoaded = false;
+
+    protected string $baseUri = 'https://api.twitch.tv/helix/';
 
     /**
      * Create a new command instance.
@@ -271,19 +136,28 @@ class FetchChannels extends Command
     {
         parent::__construct();
 
-        if (file_exists(base_path() . '/twitch.json')) {
-            $env = file_get_contents(base_path() . '/twitch.json');
-            $env = json_decode($env, true);
+        $twitchJson    = base_path() . '/twitch.json';
+        $blacklistJson = base_path() . '/blacklisted_words.json';
 
-            $this->client = new GuzzleClient([
-                'base_uri'  => 'https://api.twitch.tv/helix/',
-                'headers'   => [
-                    'Client-ID'     => config('app.twitch.id'),
-                    'Authorization' => 'Bearer ' . $env['twitch_token'],
-                ],
-            ]);
+        if (File::exists($twitchJson)) {
+            $env     = json_decode(File::get($twitchJson));
+            $name    = config('app.name');
+            $url     = 'https://www.creativestreams.tv';
+            $email   = config('app.contact');
+            $version = config('app.version');
+            $agent   = "{$name}/{$version} - {$url} | {$email}";
+
+            $this->client = Http::withOptions(['base_uri' => 'https://api.twitch.tv/helix/'])
+                ->withUserAgent($agent)
+                ->withHeaders(['Client-ID' => config('services.twitch.id')])
+                ->withToken($env->twitch_token)
+                ->acceptJson();
 
             $this->configLoaded = true;
+        }
+
+        if (File::exists($blacklistJson)) {
+            $this->blacklist = json_decode(File::get($blacklistJson), true);
         }
     }
 
@@ -312,12 +186,11 @@ class FetchChannels extends Command
     {
         $tags = Tags::where('is_blacklisted', true)->get();
 
-        collect($tags)
-            ->each(function ($tag) {
-                if (! in_array($tag->tag, $this->blacklist)) {
-                    $this->blacklist[] = $tag->tag;
-                }
-            });
+        foreach ($tags as $tag) {
+            if (! in_array($tag->tag, $this->blacklist)) {
+                $this->blacklist[] = $tag->tag;
+            }
+        }
     }
 
     /**
@@ -344,10 +217,10 @@ class FetchChannels extends Command
 
         $gameIds = '&game_id=' . implode('&game_id=', $catIDs);
 
-        $response = $this->client->request('GET', 'streams?first=100' . $gameIds . $cursor);
+        $response = $this->client->get('streams?first=100' . $gameIds . $cursor);
 
-        if ($response->getStatusCode() === 200) {
-            $responseBody = json_decode($response->getBody()->getContents());
+        if ($response->successful()) {
+            $responseBody = $response->object();
 
             if (! empty($responseBody) && ! empty($responseBody->data)) {
                 $this->requestCount++;
@@ -360,17 +233,20 @@ class FetchChannels extends Command
                         'views'     => 0,
                     ];
 
-                    $userResponse = $this->client->request('GET', 'users?id=' . $stream->user_id);
+                    $userResponse = $this->client->get('users', ['id' => $stream->user_id]);
                     $this->requestCount++;
 
-                    if ($userResponse->getStatusCode() === 200) {
-                        $userResponseBody = json_decode($userResponse->getBody()->getContents());
+                    if ($userResponse->successful()) {
+                        $userResponseBody = $userResponse->object();
 
                         if (! empty($userResponseBody) && ! empty($userResponseBody->data)) {
                             if (! empty($userResponseBody->data[0]->login)) {
                                 $user = [
                                     'slug'      => $userResponseBody->data[0]->login,
-                                    'partner'   => (! empty($userResponseBody->data[0]->broadcaster_type) && $userResponseBody->data[0]->broadcaster_type == 'partner') ? true : false,
+                                    'partner'   => (
+                                        ! empty($userResponseBody->data[0]->broadcaster_type)
+                                        && $userResponseBody->data[0]->broadcaster_type == 'partner'
+                                    ) ? true : false,
                                     'avatar'    => $userResponseBody->data[0]->profile_image_url,
                                     'views'     => $userResponseBody->data[0]->view_count,
                                 ];
@@ -405,7 +281,7 @@ class FetchChannels extends Command
                         'views'                 => $user['views'],
                         'viewers'               => $stream->viewer_count,
                         'partner'               => $user['partner'],
-                        'tags'                  => ! $tagsEmpty ? json_encode($stream->tag_ids) : null,
+                        'tags'                  => ! $tagsEmpty ? $stream->tag_ids : null,
                     ]);
                 }
 
@@ -444,7 +320,7 @@ class FetchChannels extends Command
      *
      * @param array $tag_ids Stream Known Tags
      */
-    private function populateTags(array $tag_ids = [], int | null $game_id = 0): void
+    private function populateTags(array $tag_ids = [], int|null $game_id = 0): void
     {
         $searchTags = [];
 
@@ -495,11 +371,11 @@ class FetchChannels extends Command
             $tagChunks = array_chunk($searchTags, 100, false);
 
             foreach ($tagChunks as $tags) {
-                $tagResponse = $this->client->request('GET', 'tags/streams?tag_id=' . implode('&tag_id=', $tags));
+                $tagResponse = $this->client->get('tags/streams?tag_id=' . implode('&tag_id=', $tags));
                 $this->requestCount++;
 
-                if ($tagResponse->getStatusCode() === 200) {
-                    $tagResponseBody = json_decode($tagResponse->getBody()->getContents());
+                if ($tagResponse->successful()) {
+                    $tagResponseBody = $tagResponse->object();
 
                     if (! empty($tagResponseBody) && ! empty($tagResponseBody->data)) {
                         foreach ($tagResponseBody->data as $tag) {
@@ -524,7 +400,7 @@ class FetchChannels extends Command
     /**
      * Find hashtags within the streams title for population.
      *
-     * @param array $title Stream Title
+     * @param string $title Stream Title
      */
     private function populateHashtags(string $title = null): void
     {
