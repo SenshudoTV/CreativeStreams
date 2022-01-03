@@ -30,7 +30,7 @@ export default {
                 } = await window.axios.get(
                     vm.route('channels.list', {
                         page,
-                        filters,
+                        ...filters,
                     }),
                 )
 

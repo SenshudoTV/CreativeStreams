@@ -31,6 +31,7 @@
                     </div>
                     <Filters
                         class="col-span-2"
+                        :filters="filters"
                         :show="showFilters"
                         @apply="applyFilters"
                         @clear="clearFilters"
@@ -70,7 +71,8 @@ export default {
             showFilters: false,
             filters: {
                 tags: null,
-                order: null,
+                sort: null,
+                direction: null,
             },
             selected: null,
         }
@@ -90,14 +92,50 @@ export default {
         },
         applyFilters(filters) {
             if (filters) {
-                // TODO
+                let tags = null
+
+                if (filters?.tags) {
+                    this.filters.tags = filters.tags
+
+                    this.filters.tags.forEach((tag) => {
+                        if (tags === null) {
+                            tags = tag.id + ','
+                        } else {
+                            tags += tag.id + ','
+                        }
+                    })
+
+                    if (tags !== null) {
+                        tags = tags.replace(/,\s*$/, '')
+                    }
+                } else {
+                    this.filters.tags = null
+                    tags = null
+                }
+
+                if (filters?.sort) {
+                    const split = filters.sort.split('-')
+
+                    this.filters.sort = split[0]
+                    this.filters.direction = split[1]
+                } else {
+                    this.filters.sort = null
+                    this.filters.direction = null
+                }
+
+                this.$store.dispatch('getChannels', {
+                    vm: this,
+                    page: 1,
+                    filters: { ...this.filters, tags: tags },
+                })
             }
         },
         clearFilters() {
             this.page = 1
             this.filters = {
                 tags: null,
-                order: null,
+                sort: null,
+                direction: null,
             }
 
             this.$store.dispatch('getChannels', { vm: this, page: 1 })

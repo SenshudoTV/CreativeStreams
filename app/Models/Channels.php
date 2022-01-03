@@ -52,7 +52,7 @@ class Channels extends Model
         'tags'           => 'array',
     ];
 
-    public $sort = [
+    public $sortable = [
         'viewers',
         'stream_created',
     ];
