@@ -1,6 +1,5 @@
 const path = require('path')
 const mix = require('laravel-mix')
-const env = require('dotenv-mix')
 const TerserPlugin = require('terser-webpack-plugin')
 
 /*
@@ -42,8 +41,6 @@ mix.webpackConfig({
 })
     .css('resources/assets/css/app.css', 'css', [require('tailwindcss'), require('postcss-import')])
     .js('resources/assets/js/app.js', 'js')
-    .extend('env', env)
-    .env()
     .vue()
     .extract(['vue', 'axios'])
     .version()

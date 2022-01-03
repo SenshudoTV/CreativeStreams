@@ -47,10 +47,8 @@ module.exports = {
     globals: {
         _: 'readable',
         axios: 'readable',
-        moment: 'readable',
         route: 'readable',
         Twitch: 'readable',
-        twitchAPI: 'readable',
         Vue: 'readable',
     },
 }
