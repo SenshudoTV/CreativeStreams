@@ -4,14 +4,11 @@ import { InertiaProgress } from '@inertiajs/progress'
 import { ZiggyVue } from 'ziggy-js'
 import { Ziggy } from '@/ziggy'
 import appMixins from '@/mixins'
-import moment from 'moment-timezone'
 import { Store } from '@/Store'
 require('@/bootstrap')
 require('dotenv').config()
 
 InertiaProgress.init()
-
-moment.locale(window.navigator.userLanguage || window.navigator.language)
 
 createInertiaApp({
     resolve: (name) => require(`@/Pages/${name}`),
@@ -19,8 +16,6 @@ createInertiaApp({
         const appInstance = createApp({
             render: () => h(app, props),
         })
-
-        appInstance.config.globalProperties.moment = moment
 
         appInstance
             .use(plugin)

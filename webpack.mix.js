@@ -45,6 +45,6 @@ mix.webpackConfig({
     .extend('env', env)
     .env()
     .vue()
-    .extract(['vue', 'moment', 'moment-timezone', 'axios'])
+    .extract(['vue', 'axios'])
     .version()
     .setPublicPath('public_html')

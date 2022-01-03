@@ -67,11 +67,10 @@
         "axios": "^0.24",
         "dotenv-mix": "^1.1.0",
         "es6-promise": "^4.2.8",
-        "moment": "^2.29.1",
-        "moment-timezone": "^0.5.34",
         "path": "^0.12.7",
         "uniqid": "^5.4.0",
         "vue": "^3.1.5",
+        "vue-multiselect": "^3.0.0-alpha.2",
         "vue-toastification": "^2.0.0-rc.5",
         "vuex": "^4.0"
     }
