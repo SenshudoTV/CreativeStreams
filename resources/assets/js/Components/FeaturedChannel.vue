@@ -23,7 +23,7 @@
                         :href="`https://www.twitch.tv/${featuredChannel.slug}`"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="ml-3 relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
+                        class="ml-3 relative inline-flex items-center px-4 py-2 border border-white dark:border-gray-300 shadow-sm text-sm font-medium rounded-md text-white dark:text-gray-300 hover:text-black dark:hover:text-black hover:bg-white dark:hover:bg-gray-300 focus:outline-none"
                     >
                         Enter Chat
                     </a>
@@ -59,7 +59,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['isAuthorized', 'user', 'theme']),
+        ...mapGetters(['theme']),
     },
     mounted() {
         for (let i = 0; i < 30; i++) {
@@ -79,7 +79,7 @@ export default {
         fetchFeaturedStream() {
             window.axios
                 .get(this.route('channels.random'))
-                .then(({ response: { data } }) => {
+                .then(({ data: { data } }) => {
                     this.featuredChannel = {
                         id: data.id,
                         name: data.name,
@@ -120,7 +120,7 @@ export default {
         streamEnded() {
             window.axios
                 .get(this.route('channels.random'))
-                .then(({ response: { data } }) => {
+                .then(({ data: { data } }) => {
                     this.featuredChannel = {
                         id: data.id,
                         name: data.name,

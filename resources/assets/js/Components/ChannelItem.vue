@@ -5,11 +5,11 @@
             'bg-violet-500 dark:bg-gray-800': !active,
             'bg-violet-400 dark:bg-gray-700': active,
         }"
-        @click="handleClick"
+        @click.prevent="handleClick"
     >
         <div
             id="thumbnail"
-            class="flex flex-row items-start content-start bg-gray-200 h-[210px] w-full p-2 rounded-md"
+            class="flex flex-row items-start content-start bg-gray-200 h-[210px] w-full p-2 rounded-md bg-cover bg-no-repeat"
             :style="`background-image: url(${thumbnail})`"
         >
             <div v-if="channel.partner" class="rounded-md p-2 bg-black/75 text-white mr-2">
@@ -24,7 +24,7 @@
         </div>
         <div class="flex flex-row items-center p-2">
             <Avatar class="flex-none" :src="avatar" :width="50" :height="50" />
-            <div class="flex-1 text-sm text-white/[.65] ml-2">
+            <div class="flex-1 text-sm text-white/[.65] ml-2" style="width: calc(100% - 60px)">
                 <div class="text-ellipsis whitespace-nowrap overflow-hidden text-white">
                     {{ channel.title }}
                 </div>
@@ -76,7 +76,7 @@ export default {
     },
     methods: {
         handleClick() {
-            this.$emit('click', this.channel)
+            this.$emit('change', this.channel)
         },
     },
 }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <FeaturedChannel :channel="selected" />
-        <section class="max-w-7xl mx-auto py-5">
+        <section class="max-w-7xl mx-auto py-5" id="channels">
             <Filters @updated="applyFilters" />
             <div
                 v-if="channels.length <= 0"
@@ -18,11 +18,11 @@
                     :key="`channel${index}`"
                     :channel="channel"
                     :active="channel.id === active?.id"
-                    @click="handleClick"
+                    @change="channelChannel"
                 />
             </div>
 
-            <Pagination v-if="channels.length > 0 && meta" :meta="meta" @click="changePage" />
+            <Pagination v-if="channels.length > 0 && meta" :meta="meta" @page="changePage" />
         </section>
     </div>
 </template>
@@ -32,12 +32,13 @@ import { mapGetters } from 'vuex'
 import Layout from '@/Layout/index'
 import ChannelItem from '@/Components/ChannelItem'
 import FeaturedChannel from '@/Components/FeaturedChannel'
+import Filters from '@/Components/Filters'
 import Pagination from '@/Components/Pagination'
 
 export default {
     name: 'PageIndex',
     layout: Layout,
-    components: { ChannelItem, FeaturedChannel, Pagination },
+    components: { ChannelItem, FeaturedChannel, Filters, Pagination },
     data() {
         return {
             page: 1,
@@ -56,7 +57,7 @@ export default {
         this.$store.dispatch('getChannels', { vm: this, page: this.page, filters: this.filters })
     },
     methods: {
-        handleClick(channel) {
+        channelChannel(channel) {
             if (channel !== undefined && channel !== null) {
                 this.selected = channel
                 document.getElementById('channelEmbed').scrollIntoView()
@@ -75,6 +76,8 @@ export default {
                 page: this.page,
                 filters: this.filters,
             })
+
+            document.getElementById('channels').scrollIntoView()
         },
     },
 }

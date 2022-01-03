@@ -17,7 +17,9 @@ export default {
     },
     actions: {
         async getChannels({ commit }, { vm, page, filters }) {
-            const { data, meta } = await window.axios.get(
+            const {
+                data: { data, meta },
+            } = await window.axios.get(
                 vm.route('channels.list', {
                     page,
                     filters,

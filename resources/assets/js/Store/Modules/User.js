@@ -38,7 +38,7 @@ export default {
 
                     window.twitchAPI
                         .get('/')
-                        .then(({ response: { data } }) => {
+                        .then(({ data: { data } }) => {
                             if (data.client_id === process.env.TWITCH_ID) {
                                 commit(USER_UPDATE, {
                                     id: userData.id,

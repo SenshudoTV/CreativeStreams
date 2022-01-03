@@ -1,11 +1,12 @@
 <template>
-    <div>
-        <nav class="relative z-0 inline-flex rounded-md space-x-2" aria-label="Pagination">
+    <div class="flex justify-center">
+        <nav class="relative z-0 inline-flex rounded-md space-x-2 my-4" aria-label="Pagination">
             <a
+                v-if="page.current > 1"
                 href="#"
-                class="relative inline-flex items-center px-2 py-2 rounded shadow-sm border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                class="relative inline-flex items-center px-2 py-2 rounded shadow-sm border border-violet-300 bg-violet-500 text-sm font-medium text-white hover:bg-violet-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
                 :class="{ 'disabled:opacity-75 cursor-not-allowed': page.current <= 1 }"
-                @click.prevent="$emit('click', page.previous)"
+                @click.prevent="$emit('page', page.previous)"
             >
                 <span class="sr-only">Previous</span>
                 <ChevronLeftIcon class="w-5 h-5" aria-hidden="true" />
@@ -15,22 +16,25 @@
                 :key="`page${p}`"
                 href="#"
                 :aria-current="page.current === p ? 'page' : null"
-                class="relative inline-flex items-center px-4 py-2 rounded shadow-sm border text-sm font-medium"
+                class="relative inline-flex items-center px-4 py-2 rounded shadow-sm border text-sm font-medium text-white"
                 :class="{
-                    'z-10 bg-blue-50 border-blue-200 text-blue-600': page.current === p,
-                    'bg-white border-gray-300 text-gray-500 hover:bg-gray-50': page.current !== p,
+                    'bg-violet-400 border-violet-300 dark:bg-gray-700 dark:border-gray-600':
+                        page.current === p,
+                    'bg-violet-500 border-violet-300 hover:bg-violet-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700':
+                        page.current !== p,
                 }"
-                @click.prevent="$emit('click', p)"
+                @click.prevent="$emit('page', p)"
             >
                 {{ p }}
             </a>
             <a
+                v-if="page.current < page.last"
                 href="#"
-                class="relative inline-flex items-center px-2 py-2 rounded shadow-sm border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                class="relative inline-flex items-center px-2 py-2 rounded shadow-sm border border-violet-300 bg-violet-500 text-sm font-medium text-white hover:bg-violet-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
                 :class="{
                     'disabled:opacity-75 cursor-not-allowed': page.current >= page.last,
                 }"
-                @click.prevent="$emit('click', page.next)"
+                @click.prevent="$emit('page', page.next)"
             >
                 <span class="sr-only">Next</span>
                 <ChevronRightIcon class="w-5 h-5" aria-hidden="true" />

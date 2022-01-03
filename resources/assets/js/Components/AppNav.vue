@@ -32,15 +32,6 @@
                         <MoonIcon v-if="isDarkMode" class="h-5 w-5" />
                         <SunIcon v-else class="h-5 w-5" />
                     </button>
-
-                    <button
-                        type="button"
-                        class="ml-3 relative inline-flex items-center p-2 border border-white dark:border-gray-300 shadow-sm font-medium rounded-md text-sm text-white dark:text-gray-300 hover:text-black dark:hover:text-black hover:bg-white dark:hover:bg-gray-300 focus:outline-none"
-                        @click.prevent="authorize"
-                    >
-                        <TwitchIcon class="h-5 w-5 mr-2" />
-                        {{ !isAuthorized ? 'Sign In' : 'Sign Out' }}
-                    </button>
                 </div>
             </div>
         </div>
@@ -48,17 +39,15 @@
 </template>
 
 <script>
-import { AUTH_LOGIN, AUTH_LOGOUT } from '@/Store/Actions/Authentication'
 import { USER_THEME } from '@/Store/Actions/User'
 import { mapGetters } from 'vuex'
 import { MoonIcon, SunIcon } from '@heroicons/vue/solid'
 import GithubIcon from '@/Icons/GithubIcon'
-import TwitchIcon from '@/Icons/TwitchIcon'
 import LogoImg from '../../images/cs-logo-senshudo.png'
 
 export default {
     name: 'AppNav',
-    components: { MoonIcon, SunIcon, GithubIcon, TwitchIcon },
+    components: { MoonIcon, SunIcon, GithubIcon },
     data() {
         return {
             Logo: LogoImg,
@@ -66,7 +55,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['isAuthorized', 'theme']),
+        ...mapGetters(['theme']),
     },
     mounted() {
         this.toggleTheme(true)
@@ -86,13 +75,6 @@ export default {
         })
     },
     methods: {
-        authorize() {
-            if (!this.isAuthorized) {
-                this.$store.dispatch(AUTH_LOGIN)
-            } else {
-                this.$store.dispatch(AUTH_LOGOUT)
-            }
-        },
         toggleTheme(initialSetup = false) {
             if (initialSetup) {
                 if (this.theme !== undefined && this.theme !== null) {
