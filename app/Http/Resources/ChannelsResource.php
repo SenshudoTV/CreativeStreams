@@ -28,7 +28,7 @@ class ChannelsResource extends JsonResource
             509673  => 'Makers & Crafting',
         ];
 
-        $tags = (! empty($tags)) ? $tags : [];
+        $tags = (! empty($this->tags)) ? $this->tags : [];
 
         return [
             'id'        => $this->id,
