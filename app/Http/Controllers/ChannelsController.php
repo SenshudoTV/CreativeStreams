@@ -27,6 +27,10 @@ class ChannelsController extends Controller
      */
     public function random(): ChannelsResource
     {
-        return new ChannelsResource(Channels::where('live', true)->inRandomOrder()->first());
+        if ($channel = Channels::where('live', true)->inRandomOrder()->first()) {
+            return new ChannelsResource($channel);
+        } else {
+            return response()->noContent();
+        }
     }
 }
